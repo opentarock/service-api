@@ -1,0 +1,82 @@
+package proto_oauth2;
+
+message AuthorizationRequest {
+  enum ResponseType {
+    CODE = 0;
+    TOKEN = 1;
+  }
+  required ResponseType response_type = 1;
+  optional string scope = 2;
+  optional string state = 3;
+
+  optional string client_id = 4;
+  optional string redirect_uri = 5;
+}
+
+message AuthorizationResponse {
+  required string code = 1;
+  required string state = 2;
+}
+
+message Client {
+  required string id = 1;
+  optional string secret = 2;
+}
+
+message AccessTokenAuthentication {
+  required Client client = 1;
+  required AccessTokenRequest request = 2;
+}
+
+enum GrantType {
+  authorization_code = 0;
+  password = 1;
+  client_credentials = 2;
+  refresh_token = 3;
+}
+
+enum Error {
+  invalid_request = 0;
+  invalid_client = 1;
+  invalid_grant = 2;
+  unauthorized_client = 3;
+  unsupported_grant_type = 4;
+  invalid_scope = 5;
+}
+
+message AccessTokenRequest {
+  required GrantType grant_type = 1;
+  optional string scope = 2;
+
+  // Authorization Code Grant
+  optional string code = 3;
+  optional string redirect_uri = 4;
+  optional string client_id = 5;
+
+  // Resource Owner Password Credentials Grant
+  optional string username = 6;
+  optional string password = 7;
+
+  // Refreshing token
+  optional string refresh_token = 8;
+}
+
+message AccessTokenResponse {
+  required bool success = 1;
+  optional AccessToken token = 2;
+  optional ErrorResponse error = 3;
+}
+
+message AccessToken {
+  required string access_token = 1;
+  required string token_type = 2;
+  optional uint64 expires_in = 3;
+  optional string scope = 4;
+  optional string state = 5;
+}
+
+message ErrorResponse {
+  required Error error = 1;
+  required string error_description = 2;
+  optional string error_uri = 3;
+}
