@@ -71,8 +71,9 @@ message AccessToken {
   required string access_token = 1;
   required string token_type = 2;
   optional uint64 expires_in = 3;
-  optional string scope = 4;
-  optional string state = 5;
+  optional string refresh_token = 4;
+  optional string scope = 5;
+  optional string state = 6;
 }
 
 message ErrorResponse {

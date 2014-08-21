@@ -377,8 +377,9 @@ type AccessToken struct {
 	AccessToken      *string `protobuf:"bytes,1,req,name=access_token" json:"access_token,omitempty"`
 	TokenType        *string `protobuf:"bytes,2,req,name=token_type" json:"token_type,omitempty"`
 	ExpiresIn        *uint64 `protobuf:"varint,3,opt,name=expires_in" json:"expires_in,omitempty"`
-	Scope            *string `protobuf:"bytes,4,opt,name=scope" json:"scope,omitempty"`
-	State            *string `protobuf:"bytes,5,opt,name=state" json:"state,omitempty"`
+	RefreshToken     *string `protobuf:"bytes,4,opt,name=refresh_token" json:"refresh_token,omitempty"`
+	Scope            *string `protobuf:"bytes,5,opt,name=scope" json:"scope,omitempty"`
+	State            *string `protobuf:"bytes,6,opt,name=state" json:"state,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -405,6 +406,13 @@ func (m *AccessToken) GetExpiresIn() uint64 {
 		return *m.ExpiresIn
 	}
 	return 0
+}
+
+func (m *AccessToken) GetRefreshToken() string {
+	if m != nil && m.RefreshToken != nil {
+		return *m.RefreshToken
+	}
+	return ""
 }
 
 func (m *AccessToken) GetScope() string {
