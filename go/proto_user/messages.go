@@ -1,6 +1,6 @@
 package proto_user
 
-import "code.google.com/p/goprotobuf/proto"
+import "code.google.com/p/gogoprotobuf/proto"
 
 const (
 	RegisterUserMessage     = 1

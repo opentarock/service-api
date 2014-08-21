@@ -29,141 +29,24 @@ var _ = proto.Marshal
 var _ = &json.SyntaxError{}
 var _ = math.Inf
 
-type GrantType int32
-
-const (
-	GrantType_authorization_code GrantType = 0
-	GrantType_password           GrantType = 1
-	GrantType_client_credentials GrantType = 2
-	GrantType_refresh_token      GrantType = 3
-)
-
-var GrantType_name = map[int32]string{
-	0: "authorization_code",
-	1: "password",
-	2: "client_credentials",
-	3: "refresh_token",
-}
-var GrantType_value = map[string]int32{
-	"authorization_code": 0,
-	"password":           1,
-	"client_credentials": 2,
-	"refresh_token":      3,
-}
-
-func (x GrantType) Enum() *GrantType {
-	p := new(GrantType)
-	*p = x
-	return p
-}
-func (x GrantType) String() string {
-	return proto.EnumName(GrantType_name, int32(x))
-}
-func (x *GrantType) UnmarshalJSON(data []byte) error {
-	value, err := proto.UnmarshalJSONEnum(GrantType_value, data, "GrantType")
-	if err != nil {
-		return err
-	}
-	*x = GrantType(value)
-	return nil
-}
-
-type Error int32
-
-const (
-	Error_invalid_request        Error = 0
-	Error_invalid_client         Error = 1
-	Error_invalid_grant          Error = 2
-	Error_unauthorized_client    Error = 3
-	Error_unsupported_grant_type Error = 4
-	Error_invalid_scope          Error = 5
-)
-
-var Error_name = map[int32]string{
-	0: "invalid_request",
-	1: "invalid_client",
-	2: "invalid_grant",
-	3: "unauthorized_client",
-	4: "unsupported_grant_type",
-	5: "invalid_scope",
-}
-var Error_value = map[string]int32{
-	"invalid_request":        0,
-	"invalid_client":         1,
-	"invalid_grant":          2,
-	"unauthorized_client":    3,
-	"unsupported_grant_type": 4,
-	"invalid_scope":          5,
-}
-
-func (x Error) Enum() *Error {
-	p := new(Error)
-	*p = x
-	return p
-}
-func (x Error) String() string {
-	return proto.EnumName(Error_name, int32(x))
-}
-func (x *Error) UnmarshalJSON(data []byte) error {
-	value, err := proto.UnmarshalJSONEnum(Error_value, data, "Error")
-	if err != nil {
-		return err
-	}
-	*x = Error(value)
-	return nil
-}
-
-type AuthorizationRequest_ResponseType int32
-
-const (
-	AuthorizationRequest_CODE  AuthorizationRequest_ResponseType = 0
-	AuthorizationRequest_TOKEN AuthorizationRequest_ResponseType = 1
-)
-
-var AuthorizationRequest_ResponseType_name = map[int32]string{
-	0: "CODE",
-	1: "TOKEN",
-}
-var AuthorizationRequest_ResponseType_value = map[string]int32{
-	"CODE":  0,
-	"TOKEN": 1,
-}
-
-func (x AuthorizationRequest_ResponseType) Enum() *AuthorizationRequest_ResponseType {
-	p := new(AuthorizationRequest_ResponseType)
-	*p = x
-	return p
-}
-func (x AuthorizationRequest_ResponseType) String() string {
-	return proto.EnumName(AuthorizationRequest_ResponseType_name, int32(x))
-}
-func (x *AuthorizationRequest_ResponseType) UnmarshalJSON(data []byte) error {
-	value, err := proto.UnmarshalJSONEnum(AuthorizationRequest_ResponseType_value, data, "AuthorizationRequest_ResponseType")
-	if err != nil {
-		return err
-	}
-	*x = AuthorizationRequest_ResponseType(value)
-	return nil
-}
-
 type AuthorizationRequest struct {
-	ResponseType     *AuthorizationRequest_ResponseType `protobuf:"varint,1,req,name=response_type,enum=proto_oauth2.AuthorizationRequest_ResponseType" json:"response_type,omitempty"`
-	Scope            *string                            `protobuf:"bytes,2,opt,name=scope" json:"scope,omitempty"`
-	State            *string                            `protobuf:"bytes,3,opt,name=state" json:"state,omitempty"`
-	ClientId         *string                            `protobuf:"bytes,4,opt,name=client_id" json:"client_id,omitempty"`
-	RedirectUri      *string                            `protobuf:"bytes,5,opt,name=redirect_uri" json:"redirect_uri,omitempty"`
-	XXX_unrecognized []byte                             `json:"-"`
+	ResponseType     *string `protobuf:"bytes,1,req,name=response_type" json:"response_type,omitempty"`
+	Scope            *string `protobuf:"bytes,2,opt,name=scope" json:"scope,omitempty"`
+	State            *string `protobuf:"bytes,3,opt,name=state" json:"state,omitempty"`
+	ClientId         *string `protobuf:"bytes,4,opt,name=client_id" json:"client_id,omitempty"`
+	RedirectUri      *string `protobuf:"bytes,5,opt,name=redirect_uri" json:"redirect_uri,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (m *AuthorizationRequest) Reset()         { *m = AuthorizationRequest{} }
 func (m *AuthorizationRequest) String() string { return proto.CompactTextString(m) }
 func (*AuthorizationRequest) ProtoMessage()    {}
 
-func (m *AuthorizationRequest) GetResponseType() AuthorizationRequest_ResponseType {
+func (m *AuthorizationRequest) GetResponseType() string {
 	if m != nil && m.ResponseType != nil {
 		return *m.ResponseType
 	}
-	return AuthorizationRequest_CODE
+	return ""
 }
 
 func (m *AuthorizationRequest) GetScope() string {
@@ -267,8 +150,8 @@ func (m *AccessTokenAuthentication) GetRequest() *AccessTokenRequest {
 }
 
 type AccessTokenRequest struct {
-	GrantType *GrantType `protobuf:"varint,1,req,name=grant_type,enum=proto_oauth2.GrantType" json:"grant_type,omitempty"`
-	Scope     *string    `protobuf:"bytes,2,opt,name=scope" json:"scope,omitempty"`
+	GrantType *string `protobuf:"bytes,1,req,name=grant_type" json:"grant_type,omitempty"`
+	Scope     *string `protobuf:"bytes,2,opt,name=scope" json:"scope,omitempty"`
 	// Authorization Code Grant
 	Code        *string `protobuf:"bytes,3,opt,name=code" json:"code,omitempty"`
 	RedirectUri *string `protobuf:"bytes,4,opt,name=redirect_uri" json:"redirect_uri,omitempty"`
@@ -285,11 +168,11 @@ func (m *AccessTokenRequest) Reset()         { *m = AccessTokenRequest{} }
 func (m *AccessTokenRequest) String() string { return proto.CompactTextString(m) }
 func (*AccessTokenRequest) ProtoMessage()    {}
 
-func (m *AccessTokenRequest) GetGrantType() GrantType {
+func (m *AccessTokenRequest) GetGrantType() string {
 	if m != nil && m.GrantType != nil {
 		return *m.GrantType
 	}
-	return GrantType_authorization_code
+	return ""
 }
 
 func (m *AccessTokenRequest) GetScope() string {
@@ -430,7 +313,7 @@ func (m *AccessToken) GetState() string {
 }
 
 type ErrorResponse struct {
-	Error            *Error  `protobuf:"varint,1,req,name=error,enum=proto_oauth2.Error" json:"error,omitempty"`
+	Error            *string `protobuf:"bytes,1,req,name=error" json:"error,omitempty"`
 	ErrorDescription *string `protobuf:"bytes,2,req,name=error_description" json:"error_description,omitempty"`
 	ErrorUri         *string `protobuf:"bytes,3,opt,name=error_uri" json:"error_uri,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -440,11 +323,11 @@ func (m *ErrorResponse) Reset()         { *m = ErrorResponse{} }
 func (m *ErrorResponse) String() string { return proto.CompactTextString(m) }
 func (*ErrorResponse) ProtoMessage()    {}
 
-func (m *ErrorResponse) GetError() Error {
+func (m *ErrorResponse) GetError() string {
 	if m != nil && m.Error != nil {
 		return *m.Error
 	}
-	return Error_invalid_request
+	return ""
 }
 
 func (m *ErrorResponse) GetErrorDescription() string {
@@ -462,7 +345,4 @@ func (m *ErrorResponse) GetErrorUri() string {
 }
 
 func init() {
-	proto.RegisterEnum("proto_oauth2.GrantType", GrantType_name, GrantType_value)
-	proto.RegisterEnum("proto_oauth2.Error", Error_name, Error_value)
-	proto.RegisterEnum("proto_oauth2.AuthorizationRequest_ResponseType", AuthorizationRequest_ResponseType_name, AuthorizationRequest_ResponseType_value)
 }
