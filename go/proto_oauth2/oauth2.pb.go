@@ -314,7 +314,7 @@ func (m *AccessToken) GetState() string {
 
 type ErrorResponse struct {
 	Error            *string `protobuf:"bytes,1,req,name=error" json:"error,omitempty"`
-	ErrorDescription *string `protobuf:"bytes,2,req,name=error_description" json:"error_description,omitempty"`
+	ErrorDescription *string `protobuf:"bytes,2,opt,name=error_description" json:"error_description,omitempty"`
 	ErrorUri         *string `protobuf:"bytes,3,opt,name=error_uri" json:"error_uri,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }

@@ -1,10 +1,11 @@
 package client
 
 import (
+	"errors"
 	"log"
 	"time"
 
-	"code.google.com/p/goprotobuf/proto"
+	"code.google.com/p/gogoprotobuf/proto"
 
 	nmsg "github.com/op/go-nanomsg"
 	"github.com/opentarock/service-api/go/proto_oauth2"
@@ -64,6 +65,9 @@ func (s *Oauth2ClientNanomsg) GetAccessToken(
 	responseData, err := s.oauth2ServiceSocket.Recv(0)
 	if err != nil {
 		return nil, err
+	}
+	if len(responseData) == 0 {
+		return nil, errors.New("Empty response")
 	}
 	response := proto_oauth2.AccessTokenResponse{}
 	err = proto.Unmarshal(responseData, &response)

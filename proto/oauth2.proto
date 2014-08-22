@@ -58,6 +58,6 @@ message AccessToken {
 
 message ErrorResponse {
   required string error = 1;
-  required string error_description = 2;
+  optional string error_description = 2;
   optional string error_uri = 3;
 }
