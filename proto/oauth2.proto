@@ -61,3 +61,13 @@ message ErrorResponse {
   optional string error_description = 2;
   optional string error_uri = 3;
 }
+
+message ValidateTokenRequest {
+  required string access_token = 1;
+  repeated string scope = 2;
+}
+
+message ValidateTokenResponse {
+  required bool valid = 1;
+  repeated string scope = 2;
+}

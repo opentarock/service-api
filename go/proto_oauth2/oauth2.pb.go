@@ -17,6 +17,8 @@ It has these top-level messages:
 	AccessTokenResponse
 	AccessToken
 	ErrorResponse
+	ValidateTokenRequest
+	ValidateTokenResponse
 */
 package proto_oauth2
 
@@ -342,6 +344,54 @@ func (m *ErrorResponse) GetErrorUri() string {
 		return *m.ErrorUri
 	}
 	return ""
+}
+
+type ValidateTokenRequest struct {
+	AccessToken      *string  `protobuf:"bytes,1,req,name=access_token" json:"access_token,omitempty"`
+	Scope            []string `protobuf:"bytes,2,rep,name=scope" json:"scope,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (m *ValidateTokenRequest) Reset()         { *m = ValidateTokenRequest{} }
+func (m *ValidateTokenRequest) String() string { return proto.CompactTextString(m) }
+func (*ValidateTokenRequest) ProtoMessage()    {}
+
+func (m *ValidateTokenRequest) GetAccessToken() string {
+	if m != nil && m.AccessToken != nil {
+		return *m.AccessToken
+	}
+	return ""
+}
+
+func (m *ValidateTokenRequest) GetScope() []string {
+	if m != nil {
+		return m.Scope
+	}
+	return nil
+}
+
+type ValidateTokenResponse struct {
+	Valid            *bool    `protobuf:"varint,1,req,name=valid" json:"valid,omitempty"`
+	Scope            []string `protobuf:"bytes,2,rep,name=scope" json:"scope,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (m *ValidateTokenResponse) Reset()         { *m = ValidateTokenResponse{} }
+func (m *ValidateTokenResponse) String() string { return proto.CompactTextString(m) }
+func (*ValidateTokenResponse) ProtoMessage()    {}
+
+func (m *ValidateTokenResponse) GetValid() bool {
+	if m != nil && m.Valid != nil {
+		return *m.Valid
+	}
+	return false
+}
+
+func (m *ValidateTokenResponse) GetScope() []string {
+	if m != nil {
+		return m.Scope
+	}
+	return nil
 }
 
 func init() {

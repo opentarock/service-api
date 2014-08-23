@@ -25,7 +25,7 @@ func NewOauth2ClientNanomsg() (*Oauth2ClientNanomsg, error) {
 	}
 	// Timeout is set because we can't wait for the messages forever to keep
 	// the frontend responsive.
-	const timeout = 100 * time.Millisecond
+	const timeout = 1000 * time.Millisecond
 	err = socket.SetSendTimeout(timeout)
 	err = socket.SetRecvTimeout(timeout)
 	if err != nil {
@@ -77,10 +77,46 @@ func (s *Oauth2ClientNanomsg) GetAccessToken(
 	return &response, nil
 }
 
+func (s *Oauth2ClientNanomsg) ValidateToken(accessToken string) (*proto_oauth2.ValidateTokenResponse, error) {
+	request := proto_oauth2.ValidateTokenRequest{
+		AccessToken: &accessToken,
+	}
+
+	data, err := proto.Marshal(&request)
+	if err != nil {
+		log.Fatalf("Error marshalling ValidateTokenRequest: %s", err)
+	}
+	err = s.sendMsg(request.GetMessageId(), data)
+	if err != nil {
+		return nil, err
+	}
+	responseData, err := s.recvMsg()
+	if err != nil {
+		return nil, err
+	}
+	response := proto_oauth2.ValidateTokenResponse{}
+	err = proto.Unmarshal(responseData, &response)
+	if err != nil {
+		log.Fatalf("Error unmarshalling ValidateTokenResponse: %s:", err)
+	}
+	return &response, nil
+}
+
 func (s *Oauth2ClientNanomsg) sendMsg(messageId int, data []byte) error {
 	prefixedData := make([]byte, 1, 1+len(data))
 	prefixedData[0] = byte(messageId)
 	prefixedData = append(prefixedData, data...)
 	_, err := s.oauth2ServiceSocket.Send(prefixedData, 0)
 	return err
+}
+
+func (s *Oauth2ClientNanomsg) recvMsg() ([]byte, error) {
+	responseData, err := s.oauth2ServiceSocket.Recv(0)
+	if err != nil {
+		return nil, err
+	}
+	if len(responseData) == 0 {
+		return nil, errors.New("Empty response")
+	}
+	return responseData, nil
 }

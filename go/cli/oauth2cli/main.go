@@ -9,20 +9,6 @@ import (
 	"github.com/opentarock/service-api/go/proto_oauth2"
 )
 
-func exitError(err error) {
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-}
-
-func getArg(index int) string {
-	if len(os.Args) < index {
-		return ""
-	}
-	return os.Args[index]
-}
-
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Printf("Usage: %s ACTION [ARGS...]\n", os.Args[0])
@@ -42,7 +28,28 @@ func main() {
 		result, err := json.Marshal(response)
 		exitError(err)
 		fmt.Println(string(result))
+	case "validate_token":
+		accessToken := getArg(2)
+		response, err := client.ValidateToken(accessToken)
+		exitError(err)
+		result, err := json.Marshal(response)
+		exitError(err)
+		fmt.Println(string(result))
 	default:
 		exitError(fmt.Errorf("Unknown action: %s", os.Args[1]))
 	}
+}
+
+func exitError(err error) {
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
+func getArg(index int) string {
+	if len(os.Args) < index {
+		return ""
+	}
+	return os.Args[index]
 }
