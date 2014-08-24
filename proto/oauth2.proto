@@ -15,17 +15,17 @@ message AuthorizationResponse {
 }
 
 message Client {
-  required string id = 1;
+  optional string id = 1;
   optional string secret = 2;
 }
 
 message AccessTokenAuthentication {
-  required Client client = 1;
+  optional Client client = 1;
   required AccessTokenRequest request = 2;
 }
 
 message AccessTokenRequest {
-  required string grant_type = 1;
+  optional string grant_type = 1;
   optional string scope = 2;
 
   // Authorization Code Grant

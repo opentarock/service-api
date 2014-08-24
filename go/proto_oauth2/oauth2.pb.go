@@ -104,7 +104,7 @@ func (m *AuthorizationResponse) GetState() string {
 }
 
 type Client struct {
-	Id               *string `protobuf:"bytes,1,req,name=id" json:"id,omitempty"`
+	Id               *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
 	Secret           *string `protobuf:"bytes,2,opt,name=secret" json:"secret,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
@@ -128,7 +128,7 @@ func (m *Client) GetSecret() string {
 }
 
 type AccessTokenAuthentication struct {
-	Client           *Client             `protobuf:"bytes,1,req,name=client" json:"client,omitempty"`
+	Client           *Client             `protobuf:"bytes,1,opt,name=client" json:"client,omitempty"`
 	Request          *AccessTokenRequest `protobuf:"bytes,2,req,name=request" json:"request,omitempty"`
 	XXX_unrecognized []byte              `json:"-"`
 }
@@ -152,7 +152,7 @@ func (m *AccessTokenAuthentication) GetRequest() *AccessTokenRequest {
 }
 
 type AccessTokenRequest struct {
-	GrantType *string `protobuf:"bytes,1,req,name=grant_type" json:"grant_type,omitempty"`
+	GrantType *string `protobuf:"bytes,1,opt,name=grant_type" json:"grant_type,omitempty"`
 	Scope     *string `protobuf:"bytes,2,opt,name=scope" json:"scope,omitempty"`
 	// Authorization Code Grant
 	Code        *string `protobuf:"bytes,3,opt,name=code" json:"code,omitempty"`
