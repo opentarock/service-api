@@ -47,11 +47,19 @@ func NewOauth2ClientNanomsg() (*Oauth2ClientNanomsg, error) {
 func (s *Oauth2ClientNanomsg) GetAccessToken(
 	clientId, clientSecret string, request *proto_oauth2.AccessTokenRequest) (*proto_oauth2.AccessTokenResponse, error) {
 
+	var client *proto_oauth2.Client
+	if clientId != "" || clientSecret != "" {
+		client = &proto_oauth2.Client{}
+		if clientId != "" {
+			client.Id = &clientId
+		}
+		if clientSecret != "" {
+			client.Secret = &clientSecret
+		}
+	}
+
 	accessTokenAuthentication := proto_oauth2.AccessTokenAuthentication{
-		Client: &proto_oauth2.Client{
-			Id:     proto.String(clientId),
-			Secret: proto.String(clientSecret),
-		},
+		Client:  client,
 		Request: request,
 	}
 	data, err := proto.Marshal(&accessTokenAuthentication)
