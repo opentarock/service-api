@@ -1,0 +1,46 @@
+package proto_lobby;
+
+message Player {
+  required uint64 user_id= 1;
+  required string nickname = 2;
+}
+
+message Room {
+  required string name = 1;
+  required RoomOptions options = 2;
+  required Player owner = 3;
+  repeated Player players = 4;
+}
+
+message RoomOptions {
+  optional bool private = 1 [default = false];
+  optional string password = 2;
+  optional bool autostart = 3 [default = false];
+  optional bool fill_bots = 4 [default = true];
+}
+
+// Requires proto_headers.AuthorizationHeader to be sent as header.
+message CreateRoomRequest {
+  required string name = 1;
+  required RoomOptions options = 2;
+}
+
+message CreateRoomResponse {
+  enum ErrorCode {
+    ALREADY_JOINED = 0;
+  }
+  message Error {
+    required ErrorCode error = 1;
+    optional string description = 2;
+  }
+  optional Error error = 1;
+  optional string name = 2;
+  optional RoomOptions options = 3;
+}
+
+message ListRoomsRequest {
+}
+
+message ListRoomsResponse {
+  repeated Room rooms = 1;
+}

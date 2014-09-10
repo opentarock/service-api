@@ -5,9 +5,10 @@ import (
 	"log"
 	"time"
 
-	"code.google.com/p/gogoprotobuf/proto"
+	pbuf "code.google.com/p/gogoprotobuf/proto"
 
 	nmsg "github.com/op/go-nanomsg"
+	"github.com/opentarock/service-api/go/proto"
 	"github.com/opentarock/service-api/go/proto_oauth2"
 )
 
@@ -62,11 +63,11 @@ func (s *Oauth2ClientNanomsg) GetAccessToken(
 		Client:  client,
 		Request: request,
 	}
-	data, err := proto.Marshal(&accessTokenAuthentication)
+	data, err := pbuf.Marshal(&accessTokenAuthentication)
 	if err != nil {
 		log.Fatalf("Error marshalling AccessTokenAuthentication: %s", err)
 	}
-	err = s.sendMsg(accessTokenAuthentication.GetMessageId(), data)
+	err = s.sendMsg(accessTokenAuthentication.GetMessageType(), data)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +79,7 @@ func (s *Oauth2ClientNanomsg) GetAccessToken(
 		return nil, errors.New("Empty response")
 	}
 	response := proto_oauth2.AccessTokenResponse{}
-	err = proto.Unmarshal(responseData, &response)
+	err = pbuf.Unmarshal(responseData, &response)
 	if err != nil {
 		log.Fatalf("Error unmarshalling AccessTokenResponse: %s:", err)
 	}
@@ -90,11 +91,11 @@ func (s *Oauth2ClientNanomsg) ValidateToken(accessToken string) (*proto_oauth2.V
 		AccessToken: &accessToken,
 	}
 
-	data, err := proto.Marshal(&request)
+	data, err := pbuf.Marshal(&request)
 	if err != nil {
 		log.Fatalf("Error marshalling ValidateTokenRequest: %s", err)
 	}
-	err = s.sendMsg(request.GetMessageId(), data)
+	err = s.sendMsg(request.GetMessageType(), data)
 	if err != nil {
 		return nil, err
 	}
@@ -103,16 +104,16 @@ func (s *Oauth2ClientNanomsg) ValidateToken(accessToken string) (*proto_oauth2.V
 		return nil, err
 	}
 	response := proto_oauth2.ValidateTokenResponse{}
-	err = proto.Unmarshal(responseData, &response)
+	err = pbuf.Unmarshal(responseData, &response)
 	if err != nil {
 		log.Fatalf("Error unmarshalling ValidateTokenResponse: %s:", err)
 	}
 	return &response, nil
 }
 
-func (s *Oauth2ClientNanomsg) sendMsg(messageId int, data []byte) error {
+func (s *Oauth2ClientNanomsg) sendMsg(messageType proto.Type, data []byte) error {
 	prefixedData := make([]byte, 1, 1+len(data))
-	prefixedData[0] = byte(messageId)
+	prefixedData[0] = byte(messageType)
 	prefixedData = append(prefixedData, data...)
 	_, err := s.oauth2ServiceSocket.Send(prefixedData, 0)
 	return err

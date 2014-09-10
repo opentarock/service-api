@@ -14,9 +14,8 @@ func (h Header) Set(key Type, value []byte) {
 	h[key] = value
 }
 
-func (h Header) Get(key Type) ([]byte, bool) {
-	data, ok := h[key]
-	return data, ok
+func (h Header) Get(key Type) []byte {
+	return h[key]
 }
 
 type Message struct {

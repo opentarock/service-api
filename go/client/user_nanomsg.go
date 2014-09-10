@@ -4,9 +4,10 @@ import (
 	"log"
 	"time"
 
-	proto "code.google.com/p/gogoprotobuf/proto"
+	pbuf "code.google.com/p/gogoprotobuf/proto"
 	nmsg "github.com/op/go-nanomsg"
 
+	"github.com/opentarock/service-api/go/proto"
 	"github.com/opentarock/service-api/go/proto_user"
 )
 
@@ -47,13 +48,13 @@ func (s *UserClientNanomsg) RegisterUser(
 
 	registerUser := &proto_user.RegisterUser{
 		User:        user,
-		RedirectUri: proto.String(redirectURI),
+		RedirectUri: pbuf.String(redirectURI),
 	}
-	data, err := proto.Marshal(registerUser)
+	data, err := pbuf.Marshal(registerUser)
 	if err != nil {
 		log.Fatalf("Error marshaling RegisterUser: %s", err)
 	}
-	err = s.sendMsg(registerUser.GetMessageId(), data)
+	err = s.sendMsg(registerUser.GetMessageType(), data)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +63,7 @@ func (s *UserClientNanomsg) RegisterUser(
 		return nil, err
 	}
 	response := &proto_user.RegisterResponse{}
-	err = proto.Unmarshal(responseData, response)
+	err = pbuf.Unmarshal(responseData, response)
 	if err != nil {
 		log.Fatalf("Error unmarshaling RegisterResponse: %s", err)
 	}
@@ -72,14 +73,14 @@ func (s *UserClientNanomsg) RegisterUser(
 func (s *UserClientNanomsg) AuthenticateUser(email, password string) (*proto_user.AuthenticateResult, error) {
 
 	authUser := &proto_user.AuthenticateUser{
-		Email:    proto.String(email),
-		Password: proto.String(password),
+		Email:    pbuf.String(email),
+		Password: pbuf.String(password),
 	}
-	data, err := proto.Marshal(authUser)
+	data, err := pbuf.Marshal(authUser)
 	if err != nil {
 		log.Fatalf("Error marshaling RegisterUser: %s", err)
 	}
-	err = s.sendMsg(authUser.GetMessageId(), data)
+	err = s.sendMsg(authUser.GetMessageType(), data)
 	if err != nil {
 		return nil, err
 	}
@@ -88,16 +89,16 @@ func (s *UserClientNanomsg) AuthenticateUser(email, password string) (*proto_use
 		return nil, err
 	}
 	response := &proto_user.AuthenticateResult{}
-	err = proto.Unmarshal(responseData, response)
+	err = pbuf.Unmarshal(responseData, response)
 	if err != nil {
 		log.Fatalf("Error unmarshaling RegisterResponse: %s", err)
 	}
 	return response, nil
 }
 
-func (s *UserClientNanomsg) sendMsg(messageId int, data []byte) error {
+func (s *UserClientNanomsg) sendMsg(messageType proto.Type, data []byte) error {
 	prefixedData := make([]byte, 1, 1+len(data))
-	prefixedData[0] = byte(messageId)
+	prefixedData[0] = byte(messageType)
 	prefixedData = append(prefixedData, data...)
 	_, err := s.userServiceSocket.Send(prefixedData, 0)
 	return err
