@@ -46,23 +46,21 @@ func (s *LobbyClientNanomsg) CreateRoom(
 	name string,
 	options *proto_lobby.RoomOptions) (*proto_lobby.CreateRoomResponse, error) {
 
-	createRoomRequest := &proto_lobby.CreateRoomRequest{
+	request := &proto_lobby.CreateRoomRequest{
 		Name:    &name,
 		Options: options,
 	}
 
-	data, err := pbuf.Marshal(createRoomRequest)
+	msg, err := proto.Marshal(request)
 	if err != nil {
-		log.Fatalf("Error marshaling CreateRoomRequest: %s", err)
+		return nil, err
 	}
-	msg := proto.NewMessage(proto_lobby.CreateRoomRequestMessage, data)
-	dataHeader, err := pbuf.Marshal(auth)
+	err = msg.Header.Marshal(auth)
 	if err != nil {
-		log.Fatalf("Error marshaling AuthorizationHeader: %s", err)
+		return nil, err
 	}
-	msg.Header.Set(proto_headers.AuthorizationHeaderMessage, dataHeader)
 
-	err = s.sendMsg(createRoomRequest.GetMessageType(), msg)
+	err = s.sendMsg(msg)
 	if err != nil {
 		return nil, err
 	}
@@ -74,11 +72,12 @@ func (s *LobbyClientNanomsg) CreateRoom(
 	if err != nil {
 		return nil, err
 	}
-	response, err := proto_lobby.AsCreateRoomResponse(responseMsg)
+	var response proto_lobby.CreateRoomResponse
+	err = responseMsg.Unmarshal(&response)
 	if err != nil {
-		log.Println(err)
+		return nil, err
 	}
-	return response, nil
+	return &response, nil
 }
 
 func (s *LobbyClientNanomsg) ListRooms() (*proto_lobby.ListRoomsResponse, error) {
@@ -87,11 +86,11 @@ func (s *LobbyClientNanomsg) ListRooms() (*proto_lobby.ListRoomsResponse, error)
 
 	data, err := pbuf.Marshal(request)
 	if err != nil {
-		log.Fatalf("Error marshaling ListRoomsRequest: %s", err)
+		return nil, err
 	}
 	msg := proto.NewMessage(proto_lobby.ListRoomsRequestMessage, data)
 
-	err = s.sendMsg(request.GetMessageType(), msg)
+	err = s.sendMsg(msg)
 	if err != nil {
 		return nil, err
 	}
@@ -103,14 +102,15 @@ func (s *LobbyClientNanomsg) ListRooms() (*proto_lobby.ListRoomsResponse, error)
 	if err != nil {
 		return nil, err
 	}
-	response, err := proto_lobby.AsListRoomsResponse(responseMsg)
+	var response proto_lobby.ListRoomsResponse
+	err = responseMsg.Unmarshal(&response)
 	if err != nil {
 		log.Println(err)
 	}
-	return response, nil
+	return &response, nil
 }
 
-func (s *LobbyClientNanomsg) sendMsg(messageType proto.Type, msg *proto.Message) error {
+func (s *LobbyClientNanomsg) sendMsg(msg *proto.Message) error {
 	packed, err := msg.Pack()
 	if err != nil {
 		return err

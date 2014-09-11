@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"io"
+
+	pbuf "code.google.com/p/gogoprotobuf/proto"
 )
 
 type Type uint64
@@ -14,8 +16,29 @@ func (h Header) Set(key Type, value []byte) {
 	h[key] = value
 }
 
+func (h Header) Marshal(r ProtobufMessage) error {
+	data, err := pbuf.Marshal(r)
+	if err != nil {
+		return ErrorMarshalling(r, err)
+	}
+	h.Set(r.GetMessageType(), data)
+	return nil
+}
+
 func (h Header) Get(key Type) []byte {
 	return h[key]
+}
+
+func (h Header) Unmarshal(r ProtobufMessage) (bool, error) {
+	data := h.Get(r.GetMessageType())
+	if data == nil {
+		return false, ErrorMissingHeader(r)
+	}
+	err := pbuf.Unmarshal(data, r)
+	if err != nil {
+		return true, ErrorUnmarshalling(r, err)
+	}
+	return true, nil
 }
 
 type Message struct {
@@ -30,6 +53,14 @@ func NewMessage(ty Type, data []byte) *Message {
 		Type:   ty,
 		Data:   data,
 	}
+}
+
+func Marshal(r ProtobufMessage) (*Message, error) {
+	data, err := pbuf.Marshal(r)
+	if err != nil {
+		return nil, ErrorMarshalling(r, err)
+	}
+	return NewMessage(r.GetMessageType(), data), nil
 }
 
 func Parse(packetData []byte) (*Message, error) {
@@ -135,4 +166,15 @@ func varintSize(x uint64) int {
 		i++
 	}
 	return i + 1
+}
+
+func (m *Message) Unmarshal(r ProtobufMessage) error {
+	if m.Type != r.GetMessageType() {
+		return ErrorTypeMismatch(r, m.Type)
+	}
+	err := pbuf.Unmarshal(m.Data, r)
+	if err != nil {
+		return ErrorUnmarshalling(r, err)
+	}
+	return nil
 }
