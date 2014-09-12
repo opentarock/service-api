@@ -56,8 +56,13 @@ func (s *RepService) Start() error {
 				continue
 			}
 			if handler, ok := s.messageHandlers[msg.Type]; ok {
-				responseMessage := handler.HandleMessage(msg)
-				responseData, err := responseMessage.Pack()
+				response := handler.HandleMessage(msg)
+				responseMsg, err := response.Marshal()
+				if err != nil {
+					log.Printf("Error marshalling response: %s", err)
+					continue
+				}
+				responseData, err := responseMsg.Pack()
 				if err != nil {
 					log.Printf("Error packing response message: %s", err)
 					continue

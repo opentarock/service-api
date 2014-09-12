@@ -106,16 +106,11 @@ func (s *LobbyClientNanomsg) rpcCall(
 	request proto.ProtobufMessage,
 	headers []proto.ProtobufMessage) (*proto.Message, error) {
 
-	msg, err := proto.Marshal(request)
+	msg, err := proto.MarshalHeaders(request, headers)
 	if err != nil {
 		return nil, err
 	}
-	for _, header := range headers {
-		err = msg.Header.Marshal(header)
-		if err != nil {
-			return nil, err
-		}
-	}
+
 	err = s.sendMsg(msg)
 	if err != nil {
 		return nil, err

@@ -63,6 +63,20 @@ func Marshal(r ProtobufMessage) (*Message, error) {
 	return NewMessage(r.GetMessageType(), data), nil
 }
 
+func MarshalHeaders(r ProtobufMessage, h []ProtobufMessage) (*Message, error) {
+	msg, err := Marshal(r)
+	if err != nil {
+		return nil, err
+	}
+	for _, header := range h {
+		err = msg.Header.Marshal(header)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return msg, nil
+}
+
 func Parse(packetData []byte) (*Message, error) {
 	buf := bytes.NewReader(packetData)
 	pos := 0
@@ -177,4 +191,13 @@ func (m *Message) Unmarshal(r ProtobufMessage) error {
 		return ErrorUnmarshalling(r, err)
 	}
 	return nil
+}
+
+type CompositeMessage struct {
+	Message ProtobufMessage
+	Headers []ProtobufMessage
+}
+
+func (m *CompositeMessage) Marshal() (*Message, error) {
+	return MarshalHeaders(m.Message, m.Headers)
 }
