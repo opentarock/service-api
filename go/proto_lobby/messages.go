@@ -21,6 +21,14 @@ func (m *CreateRoomResponse) GetMessageType() proto.Type {
 	return CreateRoomResponseMessage
 }
 
+func (m *JoinRoomRequest) GetMessageType() proto.Type {
+	return JoinRoomRequestMessage
+}
+
+func (m *JoinRoomResponse) GetMessageType() proto.Type {
+	return JoinRoomResponseMessage
+}
+
 func (m *ListRoomsRequest) GetMessageType() proto.Type {
 	return ListRoomsRequestMessage
 }

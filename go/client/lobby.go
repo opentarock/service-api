@@ -11,5 +11,9 @@ type LobbyClient interface {
 		name string,
 		options *proto_lobby.RoomOptions) (*proto_lobby.CreateRoomResponse, error)
 
+	JoinRoom(
+		auth *proto_headers.AuthorizationHeader,
+		roomId string) (*proto_lobby.JoinRoomResponse, error)
+
 	ListRooms() (*proto_lobby.ListRoomsResponse, error)
 }

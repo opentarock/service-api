@@ -37,8 +37,27 @@ func main() {
 		result, err := json.Marshal(response)
 		exitError(err)
 		fmt.Println(string(result))
+	case "join_room":
+		userId, err := strconv.ParseUint(getArg(2), 10, 64)
+		exitError(err)
+		roomId := getArg(3)
+		auth := proto_headers.AuthorizationHeader{
+			UserId:      pbuf.Uint64(userId),
+			AccessToken: pbuf.String("token"),
+		}
+		response, err := client.JoinRoom(&auth, roomId)
+		exitError(err)
+		result, err := json.Marshal(response)
+		exitError(err)
+		fmt.Println(string(result))
 	case "list_rooms":
-		response, err := client.ListRooms()
+		userId, err := strconv.ParseUint(getArg(2), 10, 64)
+		exitError(err)
+		auth := proto_headers.AuthorizationHeader{
+			UserId:      pbuf.Uint64(userId),
+			AccessToken: pbuf.String("token"),
+		}
+		response, err := client.ListRooms(&auth)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)

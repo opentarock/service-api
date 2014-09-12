@@ -14,6 +14,8 @@ It has these top-level messages:
 	RoomOptions
 	CreateRoomRequest
 	CreateRoomResponse
+	JoinRoomRequest
+	JoinRoomResponse
 	ListRoomsRequest
 	ListRoomsResponse
 */
@@ -83,16 +85,24 @@ func (m *Player) GetNickname() string {
 }
 
 type Room struct {
-	Name             *string      `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
-	Options          *RoomOptions `protobuf:"bytes,2,req,name=options" json:"options,omitempty"`
-	Owner            *Player      `protobuf:"bytes,3,req,name=owner" json:"owner,omitempty"`
-	Players          []*Player    `protobuf:"bytes,4,rep,name=players" json:"players,omitempty"`
+	Id               *string      `protobuf:"bytes,1,req,name=id" json:"id,omitempty"`
+	Name             *string      `protobuf:"bytes,2,req,name=name" json:"name,omitempty"`
+	Options          *RoomOptions `protobuf:"bytes,3,req,name=options" json:"options,omitempty"`
+	Owner            *Player      `protobuf:"bytes,4,req,name=owner" json:"owner,omitempty"`
+	Players          []*Player    `protobuf:"bytes,5,rep,name=players" json:"players,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (m *Room) Reset()         { *m = Room{} }
 func (m *Room) String() string { return proto.CompactTextString(m) }
 func (*Room) ProtoMessage()    {}
+
+func (m *Room) GetId() string {
+	if m != nil && m.Id != nil {
+		return *m.Id
+	}
+	return ""
+}
 
 func (m *Room) GetName() string {
 	if m != nil && m.Name != nil {
@@ -193,8 +203,7 @@ func (m *CreateRoomRequest) GetOptions() *RoomOptions {
 
 type CreateRoomResponse struct {
 	Error            *CreateRoomResponse_Error `protobuf:"bytes,1,opt,name=error" json:"error,omitempty"`
-	Name             *string                   `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
-	Options          *RoomOptions              `protobuf:"bytes,3,opt,name=options" json:"options,omitempty"`
+	Room             *Room                     `protobuf:"bytes,2,opt,name=room" json:"room,omitempty"`
 	XXX_unrecognized []byte                    `json:"-"`
 }
 
@@ -209,16 +218,9 @@ func (m *CreateRoomResponse) GetError() *CreateRoomResponse_Error {
 	return nil
 }
 
-func (m *CreateRoomResponse) GetName() string {
-	if m != nil && m.Name != nil {
-		return *m.Name
-	}
-	return ""
-}
-
-func (m *CreateRoomResponse) GetOptions() *RoomOptions {
+func (m *CreateRoomResponse) GetRoom() *Room {
 	if m != nil {
-		return m.Options
+		return m.Room
 	}
 	return nil
 }
@@ -245,6 +247,38 @@ func (m *CreateRoomResponse_Error) GetDescription() string {
 		return *m.Description
 	}
 	return ""
+}
+
+type JoinRoomRequest struct {
+	RoomId           *string `protobuf:"bytes,1,req,name=room_id" json:"room_id,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *JoinRoomRequest) Reset()         { *m = JoinRoomRequest{} }
+func (m *JoinRoomRequest) String() string { return proto.CompactTextString(m) }
+func (*JoinRoomRequest) ProtoMessage()    {}
+
+func (m *JoinRoomRequest) GetRoomId() string {
+	if m != nil && m.RoomId != nil {
+		return *m.RoomId
+	}
+	return ""
+}
+
+type JoinRoomResponse struct {
+	Room             *Room  `protobuf:"bytes,1,opt,name=room" json:"room,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *JoinRoomResponse) Reset()         { *m = JoinRoomResponse{} }
+func (m *JoinRoomResponse) String() string { return proto.CompactTextString(m) }
+func (*JoinRoomResponse) ProtoMessage()    {}
+
+func (m *JoinRoomResponse) GetRoom() *Room {
+	if m != nil {
+		return m.Room
+	}
+	return nil
 }
 
 type ListRoomsRequest struct {

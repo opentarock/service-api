@@ -4,7 +4,6 @@ import (
 	"log"
 	"time"
 
-	pbuf "code.google.com/p/gogoprotobuf/proto"
 	nmsg "github.com/op/go-nanomsg"
 
 	"github.com/opentarock/service-api/go/proto"
@@ -51,27 +50,11 @@ func (s *LobbyClientNanomsg) CreateRoom(
 		Options: options,
 	}
 
-	msg, err := proto.Marshal(request)
-	if err != nil {
-		return nil, err
-	}
-	err = msg.Header.Marshal(auth)
+	responseMsg, err := s.rpcCall(request, []proto.ProtobufMessage{auth})
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.sendMsg(msg)
-	if err != nil {
-		return nil, err
-	}
-	responseData, err := s.lobbyServiceSocket.Recv(0)
-	if err != nil {
-		return nil, err
-	}
-	responseMsg, err := proto.Parse(responseData)
-	if err != nil {
-		return nil, err
-	}
 	var response proto_lobby.CreateRoomResponse
 	err = responseMsg.Unmarshal(&response)
 	if err != nil {
@@ -80,34 +63,69 @@ func (s *LobbyClientNanomsg) CreateRoom(
 	return &response, nil
 }
 
-func (s *LobbyClientNanomsg) ListRooms() (*proto_lobby.ListRoomsResponse, error) {
+func (s *LobbyClientNanomsg) JoinRoom(
+	auth *proto_headers.AuthorizationHeader,
+	roomId string) (*proto_lobby.JoinRoomResponse, error) {
+
+	request := &proto_lobby.JoinRoomRequest{
+		RoomId: &roomId,
+	}
+
+	responseMsg, err := s.rpcCall(request, []proto.ProtobufMessage{auth})
+	if err != nil {
+		return nil, err
+	}
+
+	var response proto_lobby.JoinRoomResponse
+	err = responseMsg.Unmarshal(&response)
+	if err != nil {
+		return nil, err
+	}
+	return &response, nil
+}
+
+func (s *LobbyClientNanomsg) ListRooms(
+	auth *proto_headers.AuthorizationHeader) (*proto_lobby.ListRoomsResponse, error) {
 
 	request := &proto_lobby.ListRoomsRequest{}
 
-	data, err := pbuf.Marshal(request)
+	responseMsg, err := s.rpcCall(request, []proto.ProtobufMessage{auth})
 	if err != nil {
 		return nil, err
 	}
-	msg := proto.NewMessage(proto_lobby.ListRoomsRequestMessage, data)
 
-	err = s.sendMsg(msg)
-	if err != nil {
-		return nil, err
-	}
-	responseData, err := s.lobbyServiceSocket.Recv(0)
-	if err != nil {
-		return nil, err
-	}
-	responseMsg, err := proto.Parse(responseData)
-	if err != nil {
-		return nil, err
-	}
 	var response proto_lobby.ListRoomsResponse
 	err = responseMsg.Unmarshal(&response)
 	if err != nil {
 		log.Println(err)
 	}
 	return &response, nil
+}
+
+func (s *LobbyClientNanomsg) rpcCall(
+	request proto.ProtobufMessage,
+	headers []proto.ProtobufMessage) (*proto.Message, error) {
+
+	msg, err := proto.Marshal(request)
+	if err != nil {
+		return nil, err
+	}
+	for _, header := range headers {
+		err = msg.Header.Marshal(header)
+		if err != nil {
+			return nil, err
+		}
+	}
+	err = s.sendMsg(msg)
+	if err != nil {
+		return nil, err
+	}
+	responseMsg, err := s.recvMsg()
+	if err != nil {
+		return nil, err
+	}
+
+	return responseMsg, nil
 }
 
 func (s *LobbyClientNanomsg) sendMsg(msg *proto.Message) error {
@@ -117,6 +135,18 @@ func (s *LobbyClientNanomsg) sendMsg(msg *proto.Message) error {
 	}
 	_, err = s.lobbyServiceSocket.Send(packed, 0)
 	return err
+}
+
+func (s *LobbyClientNanomsg) recvMsg() (*proto.Message, error) {
+	responseData, err := s.lobbyServiceSocket.Recv(0)
+	if err != nil {
+		return nil, err
+	}
+	responseMsg, err := proto.Parse(responseData)
+	if err != nil {
+		return nil, err
+	}
+	return responseMsg, err
 }
 
 // Close closes all the sockets and cleans up all the resources associated with

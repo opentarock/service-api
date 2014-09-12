@@ -1,3 +1,3 @@
 #!/usr/bin/enc bash
 
-go run go/cli/lobbycli/main.go list_rooms
+go run go/cli/lobbycli/main.go list_rooms $1
