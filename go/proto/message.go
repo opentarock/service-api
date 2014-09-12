@@ -198,6 +198,6 @@ type CompositeMessage struct {
 	Headers []ProtobufMessage
 }
 
-func (m *CompositeMessage) Marshal() (*Message, error) {
+func (m CompositeMessage) Marshal() (*Message, error) {
 	return MarshalHeaders(m.Message, m.Headers)
 }
