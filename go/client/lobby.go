@@ -15,5 +15,9 @@ type LobbyClient interface {
 		auth *proto_headers.AuthorizationHeader,
 		roomId string) (*proto_lobby.JoinRoomResponse, error)
 
-	ListRooms() (*proto_lobby.ListRoomsResponse, error)
+	LeaveRoom(
+		auth *proto_headers.AuthorizationHeader) (*proto_lobby.LeaveRoomResponse, error)
+
+	ListRooms(
+		auth *proto_headers.AuthorizationHeader) (*proto_lobby.ListRoomsResponse, error)
 }

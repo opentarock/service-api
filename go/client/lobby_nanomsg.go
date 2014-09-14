@@ -50,7 +50,7 @@ func (s *LobbyClientNanomsg) CreateRoom(
 		Options: options,
 	}
 
-	responseMsg, err := s.rpcCall(request, []proto.ProtobufMessage{auth})
+	responseMsg, err := s.rpcCall(request, auth)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (s *LobbyClientNanomsg) JoinRoom(
 		RoomId: &roomId,
 	}
 
-	responseMsg, err := s.rpcCall(request, []proto.ProtobufMessage{auth})
+	responseMsg, err := s.rpcCall(request, auth)
 	if err != nil {
 		return nil, err
 	}
@@ -84,12 +84,30 @@ func (s *LobbyClientNanomsg) JoinRoom(
 	return &response, nil
 }
 
+func (s *LobbyClientNanomsg) LeaveRoom(
+	auth *proto_headers.AuthorizationHeader) (*proto_lobby.LeaveRoomResponse, error) {
+
+	request := &proto_lobby.LeaveRoomRequest{}
+
+	responseMsg, err := s.rpcCall(request, auth)
+	if err != nil {
+		return nil, err
+	}
+
+	var response proto_lobby.LeaveRoomResponse
+	err = responseMsg.Unmarshal(&response)
+	if err != nil {
+		return nil, err
+	}
+	return &response, nil
+}
+
 func (s *LobbyClientNanomsg) ListRooms(
 	auth *proto_headers.AuthorizationHeader) (*proto_lobby.ListRoomsResponse, error) {
 
 	request := &proto_lobby.ListRoomsRequest{}
 
-	responseMsg, err := s.rpcCall(request, []proto.ProtobufMessage{auth})
+	responseMsg, err := s.rpcCall(request, auth)
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +122,7 @@ func (s *LobbyClientNanomsg) ListRooms(
 
 func (s *LobbyClientNanomsg) rpcCall(
 	request proto.ProtobufMessage,
-	headers []proto.ProtobufMessage) (*proto.Message, error) {
+	headers ...proto.ProtobufMessage) (*proto.Message, error) {
 
 	msg, err := proto.MarshalHeaders(request, headers)
 	if err != nil {

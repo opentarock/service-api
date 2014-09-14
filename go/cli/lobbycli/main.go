@@ -50,6 +50,18 @@ func main() {
 		result, err := json.Marshal(response)
 		exitError(err)
 		fmt.Println(string(result))
+	case "leave_room":
+		userId, err := strconv.ParseUint(getArg(2), 10, 64)
+		exitError(err)
+		auth := proto_headers.AuthorizationHeader{
+			UserId:      pbuf.Uint64(userId),
+			AccessToken: pbuf.String("token"),
+		}
+		response, err := client.LeaveRoom(&auth)
+		exitError(err)
+		result, err := json.Marshal(response)
+		exitError(err)
+		fmt.Println(string(result))
 	case "list_rooms":
 		userId, err := strconv.ParseUint(getArg(2), 10, 64)
 		exitError(err)

@@ -6,11 +6,14 @@ const (
 	CreateRoomRequestMessage  = 0x0A0001
 	CreateRoomResponseMessage = 0x0A0002
 
-	JoinRoomRequestMessage  = 0x0A0011
-	JoinRoomResponseMessage = 0x0A0012
+	JoinRoomRequestMessage  = 0x0A0010
+	JoinRoomResponseMessage = 0x0A0011
 
-	ListRoomsRequestMessage  = 0x0A0020
-	ListRoomsResponseMessage = 0x0A0021
+	LeaveRoomRequestMessage  = 0x0A0020
+	LeaveRoomResponseMessage = 0x0A0021
+
+	ListRoomsRequestMessage  = 0x0A00A0
+	ListRoomsResponseMessage = 0x0A00A1
 )
 
 func (m *CreateRoomRequest) GetMessageType() proto.Type {
@@ -27,6 +30,14 @@ func (m *JoinRoomRequest) GetMessageType() proto.Type {
 
 func (m *JoinRoomResponse) GetMessageType() proto.Type {
 	return JoinRoomResponseMessage
+}
+
+func (m *LeaveRoomRequest) GetMessageType() proto.Type {
+	return LeaveRoomRequestMessage
+}
+
+func (m *LeaveRoomResponse) GetMessageType() proto.Type {
+	return LeaveRoomResponseMessage
 }
 
 func (m *ListRoomsRequest) GetMessageType() proto.Type {

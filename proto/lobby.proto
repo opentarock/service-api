@@ -28,26 +28,38 @@ message CreateRoomRequest {
 
 message CreateRoomResponse {
   enum ErrorCode {
-    ALREADY_JOINED = 0;
+    ALREADY_IN_ROOM = 0;
   }
-  message Error {
-    required ErrorCode error = 1;
-    optional string description = 2;
-  }
-  optional Error error = 1;
-  optional Room room = 2;
+  optional Room room = 1;
+  optional ErrorCode error_code = 2;
 }
 
+// Requires proto_headers.AuthorizationHeader to be sent as header.
 message JoinRoomRequest {
   required string room_id = 1;
 }
 
 message JoinRoomResponse {
+  enum ErrorCode {
+    ROOM_DOES_NOT_EXIST = 0;
+    ROOM_FULL = 1;
+  }
   optional Room room = 1;
+  optional ErrorCode error_code = 2;
 }
 
-message ListRoomsRequest {
+// Requires proto_headers.AuthorizationHeader to be sent as header.
+message LeaveRoomRequest {}
+
+message LeaveRoomResponse {
+  enum ErrorCode {
+    NOT_IN_ROOM = 0;
+  }
+  optional ErrorCode error_code = 1;
 }
+
+// Requires proto_headers.AuthorizationHeader to be sent as header.
+message ListRoomsRequest {}
 
 message ListRoomsResponse {
   repeated Room rooms = 1;

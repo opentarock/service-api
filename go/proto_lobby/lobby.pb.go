@@ -16,6 +16,8 @@ It has these top-level messages:
 	CreateRoomResponse
 	JoinRoomRequest
 	JoinRoomResponse
+	LeaveRoomRequest
+	LeaveRoomResponse
 	ListRoomsRequest
 	ListRoomsResponse
 */
@@ -33,14 +35,14 @@ var _ = math.Inf
 type CreateRoomResponse_ErrorCode int32
 
 const (
-	CreateRoomResponse_ALREADY_JOINED CreateRoomResponse_ErrorCode = 0
+	CreateRoomResponse_ALREADY_IN_ROOM CreateRoomResponse_ErrorCode = 0
 )
 
 var CreateRoomResponse_ErrorCode_name = map[int32]string{
-	0: "ALREADY_JOINED",
+	0: "ALREADY_IN_ROOM",
 }
 var CreateRoomResponse_ErrorCode_value = map[string]int32{
-	"ALREADY_JOINED": 0,
+	"ALREADY_IN_ROOM": 0,
 }
 
 func (x CreateRoomResponse_ErrorCode) Enum() *CreateRoomResponse_ErrorCode {
@@ -57,6 +59,69 @@ func (x *CreateRoomResponse_ErrorCode) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*x = CreateRoomResponse_ErrorCode(value)
+	return nil
+}
+
+type JoinRoomResponse_ErrorCode int32
+
+const (
+	JoinRoomResponse_ROOM_DOES_NOT_EXIST JoinRoomResponse_ErrorCode = 0
+	JoinRoomResponse_ROOM_FULL           JoinRoomResponse_ErrorCode = 1
+)
+
+var JoinRoomResponse_ErrorCode_name = map[int32]string{
+	0: "ROOM_DOES_NOT_EXIST",
+	1: "ROOM_FULL",
+}
+var JoinRoomResponse_ErrorCode_value = map[string]int32{
+	"ROOM_DOES_NOT_EXIST": 0,
+	"ROOM_FULL":           1,
+}
+
+func (x JoinRoomResponse_ErrorCode) Enum() *JoinRoomResponse_ErrorCode {
+	p := new(JoinRoomResponse_ErrorCode)
+	*p = x
+	return p
+}
+func (x JoinRoomResponse_ErrorCode) String() string {
+	return proto.EnumName(JoinRoomResponse_ErrorCode_name, int32(x))
+}
+func (x *JoinRoomResponse_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(JoinRoomResponse_ErrorCode_value, data, "JoinRoomResponse_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = JoinRoomResponse_ErrorCode(value)
+	return nil
+}
+
+type LeaveRoomResponse_ErrorCode int32
+
+const (
+	LeaveRoomResponse_NOT_IN_ROOM LeaveRoomResponse_ErrorCode = 0
+)
+
+var LeaveRoomResponse_ErrorCode_name = map[int32]string{
+	0: "NOT_IN_ROOM",
+}
+var LeaveRoomResponse_ErrorCode_value = map[string]int32{
+	"NOT_IN_ROOM": 0,
+}
+
+func (x LeaveRoomResponse_ErrorCode) Enum() *LeaveRoomResponse_ErrorCode {
+	p := new(LeaveRoomResponse_ErrorCode)
+	*p = x
+	return p
+}
+func (x LeaveRoomResponse_ErrorCode) String() string {
+	return proto.EnumName(LeaveRoomResponse_ErrorCode_name, int32(x))
+}
+func (x *LeaveRoomResponse_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(LeaveRoomResponse_ErrorCode_value, data, "LeaveRoomResponse_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = LeaveRoomResponse_ErrorCode(value)
 	return nil
 }
 
@@ -202,21 +267,14 @@ func (m *CreateRoomRequest) GetOptions() *RoomOptions {
 }
 
 type CreateRoomResponse struct {
-	Error            *CreateRoomResponse_Error `protobuf:"bytes,1,opt,name=error" json:"error,omitempty"`
-	Room             *Room                     `protobuf:"bytes,2,opt,name=room" json:"room,omitempty"`
-	XXX_unrecognized []byte                    `json:"-"`
+	Room             *Room                         `protobuf:"bytes,1,opt,name=room" json:"room,omitempty"`
+	ErrorCode        *CreateRoomResponse_ErrorCode `protobuf:"varint,2,opt,name=error_code,enum=proto_lobby.CreateRoomResponse_ErrorCode" json:"error_code,omitempty"`
+	XXX_unrecognized []byte                        `json:"-"`
 }
 
 func (m *CreateRoomResponse) Reset()         { *m = CreateRoomResponse{} }
 func (m *CreateRoomResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateRoomResponse) ProtoMessage()    {}
-
-func (m *CreateRoomResponse) GetError() *CreateRoomResponse_Error {
-	if m != nil {
-		return m.Error
-	}
-	return nil
-}
 
 func (m *CreateRoomResponse) GetRoom() *Room {
 	if m != nil {
@@ -225,30 +283,14 @@ func (m *CreateRoomResponse) GetRoom() *Room {
 	return nil
 }
 
-type CreateRoomResponse_Error struct {
-	Error            *CreateRoomResponse_ErrorCode `protobuf:"varint,1,req,name=error,enum=proto_lobby.CreateRoomResponse_ErrorCode" json:"error,omitempty"`
-	Description      *string                       `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
-	XXX_unrecognized []byte                        `json:"-"`
-}
-
-func (m *CreateRoomResponse_Error) Reset()         { *m = CreateRoomResponse_Error{} }
-func (m *CreateRoomResponse_Error) String() string { return proto.CompactTextString(m) }
-func (*CreateRoomResponse_Error) ProtoMessage()    {}
-
-func (m *CreateRoomResponse_Error) GetError() CreateRoomResponse_ErrorCode {
-	if m != nil && m.Error != nil {
-		return *m.Error
+func (m *CreateRoomResponse) GetErrorCode() CreateRoomResponse_ErrorCode {
+	if m != nil && m.ErrorCode != nil {
+		return *m.ErrorCode
 	}
-	return CreateRoomResponse_ALREADY_JOINED
+	return CreateRoomResponse_ALREADY_IN_ROOM
 }
 
-func (m *CreateRoomResponse_Error) GetDescription() string {
-	if m != nil && m.Description != nil {
-		return *m.Description
-	}
-	return ""
-}
-
+// Requires proto_headers.AuthorizationHeader to be sent as header.
 type JoinRoomRequest struct {
 	RoomId           *string `protobuf:"bytes,1,req,name=room_id" json:"room_id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -266,8 +308,9 @@ func (m *JoinRoomRequest) GetRoomId() string {
 }
 
 type JoinRoomResponse struct {
-	Room             *Room  `protobuf:"bytes,1,opt,name=room" json:"room,omitempty"`
-	XXX_unrecognized []byte `json:"-"`
+	Room             *Room                       `protobuf:"bytes,1,opt,name=room" json:"room,omitempty"`
+	ErrorCode        *JoinRoomResponse_ErrorCode `protobuf:"varint,2,opt,name=error_code,enum=proto_lobby.JoinRoomResponse_ErrorCode" json:"error_code,omitempty"`
+	XXX_unrecognized []byte                      `json:"-"`
 }
 
 func (m *JoinRoomResponse) Reset()         { *m = JoinRoomResponse{} }
@@ -281,6 +324,39 @@ func (m *JoinRoomResponse) GetRoom() *Room {
 	return nil
 }
 
+func (m *JoinRoomResponse) GetErrorCode() JoinRoomResponse_ErrorCode {
+	if m != nil && m.ErrorCode != nil {
+		return *m.ErrorCode
+	}
+	return JoinRoomResponse_ROOM_DOES_NOT_EXIST
+}
+
+// Requires proto_headers.AuthorizationHeader to be sent as header.
+type LeaveRoomRequest struct {
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *LeaveRoomRequest) Reset()         { *m = LeaveRoomRequest{} }
+func (m *LeaveRoomRequest) String() string { return proto.CompactTextString(m) }
+func (*LeaveRoomRequest) ProtoMessage()    {}
+
+type LeaveRoomResponse struct {
+	ErrorCode        *LeaveRoomResponse_ErrorCode `protobuf:"varint,1,opt,name=error_code,enum=proto_lobby.LeaveRoomResponse_ErrorCode" json:"error_code,omitempty"`
+	XXX_unrecognized []byte                       `json:"-"`
+}
+
+func (m *LeaveRoomResponse) Reset()         { *m = LeaveRoomResponse{} }
+func (m *LeaveRoomResponse) String() string { return proto.CompactTextString(m) }
+func (*LeaveRoomResponse) ProtoMessage()    {}
+
+func (m *LeaveRoomResponse) GetErrorCode() LeaveRoomResponse_ErrorCode {
+	if m != nil && m.ErrorCode != nil {
+		return *m.ErrorCode
+	}
+	return LeaveRoomResponse_NOT_IN_ROOM
+}
+
+// Requires proto_headers.AuthorizationHeader to be sent as header.
 type ListRoomsRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
@@ -307,4 +383,6 @@ func (m *ListRoomsResponse) GetRooms() []*Room {
 
 func init() {
 	proto.RegisterEnum("proto_lobby.CreateRoomResponse_ErrorCode", CreateRoomResponse_ErrorCode_name, CreateRoomResponse_ErrorCode_value)
+	proto.RegisterEnum("proto_lobby.JoinRoomResponse_ErrorCode", JoinRoomResponse_ErrorCode_name, JoinRoomResponse_ErrorCode_value)
+	proto.RegisterEnum("proto_lobby.LeaveRoomResponse_ErrorCode", LeaveRoomResponse_ErrorCode_name, LeaveRoomResponse_ErrorCode_value)
 }
