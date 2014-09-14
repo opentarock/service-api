@@ -1,0 +1,14 @@
+package proto_errors;
+
+enum Error {
+  INTERNAL_ERROR = 0;
+  MISSING_HEADER = 1;
+  UNSUPPORTED_MESSAGE = 2;
+  MALFORMED_MESSAGE = 3;
+  EMPTY_MESSAGE = 4;
+}
+
+message ErrorResponse {
+  required Error error = 1;
+  optional string description = 2;
+}

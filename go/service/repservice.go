@@ -6,6 +6,7 @@ import (
 
 	nmsg "github.com/op/go-nanomsg"
 	"github.com/opentarock/service-api/go/proto"
+	"github.com/opentarock/service-api/go/proto_errors"
 )
 
 type messageHandlers map[proto.Type]MessageHandler
@@ -57,16 +58,19 @@ func (s *RepService) Start() error {
 			}
 			if len(recvData) < 1 {
 				log.Print("Unexpected empty message")
+				sendResponse(socket, proto_errors.NewEmptyMessage())
 				continue
 			}
 			msg, err := proto.Parse(recvData)
 			if err != nil {
 				log.Printf("Error parsing message: %s", err)
+				sendResponse(socket, proto_errors.NewMalformedMessageUnpack())
 				continue
 			}
 			if handled, err := s.messageHandlers.handleType(socket, msg.Type, msg); handled {
 				if err != nil {
 					log.Println(err)
+					sendResponse(socket, proto_errors.NewInternalErrorResponse())
 					continue
 				}
 			} else {
@@ -75,13 +79,15 @@ func (s *RepService) Start() error {
 					handled, err = s.headerHandlers.handleType(socket, msgType, msg)
 					if err != nil {
 						log.Println(err)
+						sendResponse(socket, proto_errors.NewInternalErrorResponse())
 						break
 					} else if handled {
 						break
 					}
 				}
 				if !handled {
-					log.Printf("Unknown message type: %d", recvData[0])
+					log.Printf("Unknown message type: %X", msg.Type)
+					sendResponse(socket, proto_errors.NewUnsupportedMessage(msg.Type))
 				}
 			}
 		}
@@ -107,6 +113,18 @@ func (h messageHandlers) handleType(socket *nmsg.RepSocket, msgType proto.Type, 
 		return true, nil
 	}
 	return false, nil
+}
+
+func sendResponse(socket *nmsg.RepSocket, msg proto.ProtobufMessage) {
+	msgResponse := proto.MarshalForce(msg)
+	responseData, err := msgResponse.Pack()
+	if err != nil {
+		log.Panicf("Error packing response message: %s", err)
+	}
+	_, err = socket.Send(responseData, 0)
+	if err != nil {
+		log.Println("Error sending response: %s", err)
+	}
 }
 
 func (s *RepService) Close() error {

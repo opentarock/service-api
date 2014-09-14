@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"io"
+	"log"
 
 	pbuf "code.google.com/p/gogoprotobuf/proto"
 )
@@ -61,6 +62,14 @@ func Marshal(r ProtobufMessage) (*Message, error) {
 		return nil, ErrorMarshalling(r, err)
 	}
 	return NewMessage(r.GetMessageType(), data), nil
+}
+
+func MarshalForce(m ProtobufMessage) *Message {
+	msg, err := Marshal(m)
+	if err != nil {
+		log.Panicln(err)
+	}
+	return msg
 }
 
 func MarshalHeaders(r ProtobufMessage, h []ProtobufMessage) (*Message, error) {
