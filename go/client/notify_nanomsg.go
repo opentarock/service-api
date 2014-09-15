@@ -15,7 +15,7 @@ func NewNotifyClientNanomsg() *NotifyClientNanomsg {
 	}
 }
 
-func (c *NotifyClientNanomsg) MessageUser(
+func (c *NotifyClientNanomsg) MessageUsers(
 	msg proto.ProtobufMessage, users ...uint64) (*proto_notify.MessageUsersResponse, error) {
 
 	header := proto_notify.MessageUsersHeader{
