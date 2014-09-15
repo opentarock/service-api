@@ -34,10 +34,24 @@ func NewInternalErrorResponse() *ErrorResponse {
 	return NewInternalError("There was a problem sending a response.")
 }
 
+func NewMissingHeader(ty proto.Type) *ErrorResponse {
+	return &ErrorResponse{
+		Error:       Error_MISSING_HEADER.Enum(),
+		Description: pbuf.String(fmt.Sprintf("Missing header with type=%X", ty)),
+	}
+}
+
 func NewUnsupportedMessage(ty proto.Type) *ErrorResponse {
 	return &ErrorResponse{
 		Error:       Error_INTERNAL_ERROR.Enum(),
 		Description: pbuf.String(fmt.Sprintf("Message of type=%X is not supported by this service.", ty)),
+	}
+}
+
+func NewMalformedMessage(ty proto.Type) *ErrorResponse {
+	return &ErrorResponse{
+		Error:       Error_MALFORMED_MESSAGE.Enum(),
+		Description: pbuf.String(fmt.Sprintf("Message of type=%X could no not be decoded.", ty)),
 	}
 }
 
