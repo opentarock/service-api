@@ -14,7 +14,7 @@ func ErrorMarshalling(r ProtobufMessage, err error) error {
 }
 
 func ErrorTypeMismatch(r ProtobufMessage, actual Type) error {
-	return fmt.Errorf("Expecting %s (type=%X) but got message with type %d",
+	return fmt.Errorf("Expecting %s (type=%X) but got message with type=%X",
 		reflect.TypeOf(r), r.GetMessageType(), actual)
 }
 

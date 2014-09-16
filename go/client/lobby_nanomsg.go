@@ -120,6 +120,24 @@ func (s *LobbyClientNanomsg) ListRooms(
 	return &response, nil
 }
 
+func (s *LobbyClientNanomsg) RoomInfo(roomId string) (*proto_lobby.RoomInfoResponse, error) {
+	request := &proto_lobby.RoomInfoRequest{
+		RoomId: &roomId,
+	}
+
+	responseMsg, err := s.rpcCall(request)
+	if err != nil {
+		return nil, err
+	}
+
+	var response proto_lobby.RoomInfoResponse
+	err = responseMsg.Unmarshal(&response)
+	if err != nil {
+		log.Println(err)
+	}
+	return &response, nil
+}
+
 func (s *LobbyClientNanomsg) rpcCall(
 	request proto.ProtobufMessage,
 	headers ...proto.ProtobufMessage) (*proto.Message, error) {

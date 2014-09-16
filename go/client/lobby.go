@@ -20,4 +20,6 @@ type LobbyClient interface {
 
 	ListRooms(
 		auth *proto_headers.AuthorizationHeader) (*proto_lobby.ListRoomsResponse, error)
+
+	RoomInfo(roomId string) (*proto_lobby.RoomInfoResponse, error)
 }

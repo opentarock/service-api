@@ -74,6 +74,13 @@ func main() {
 		result, err := json.Marshal(response)
 		exitError(err)
 		fmt.Println(string(result))
+	case "room_info":
+		roomId := getArg(2)
+		response, err := client.RoomInfo(roomId)
+		exitError(err)
+		result, err := json.Marshal(response)
+		exitError(err)
+		fmt.Println(string(result))
 	default:
 		exitError(fmt.Errorf("Unknown action: %s", os.Args[1]))
 	}

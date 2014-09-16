@@ -48,6 +48,10 @@ message JoinRoomResponse {
   optional ErrorCode error_code = 2;
 }
 
+message JoinRoomEvent {
+  required Player player = 1;
+}
+
 // Requires proto_headers.AuthorizationHeader to be sent as header.
 message LeaveRoomRequest {}
 
@@ -58,9 +62,25 @@ message LeaveRoomResponse {
   optional ErrorCode error_code = 1;
 }
 
+message LeaveRoomEvent {
+  required uint64 player_id = 1;
+}
+
 // Requires proto_headers.AuthorizationHeader to be sent as header.
 message ListRoomsRequest {}
 
 message ListRoomsResponse {
   repeated Room rooms = 1;
+}
+
+message RoomInfoRequest {
+  required string room_id = 1;
+}
+
+message RoomInfoResponse {
+  enum ErrorCode {
+    ROOM_DOES_NOT_EXIST = 0;
+  }
+  optional ErrorCode error_code = 1;
+  optional Room room = 2;
 }

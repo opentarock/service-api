@@ -16,10 +16,14 @@ It has these top-level messages:
 	CreateRoomResponse
 	JoinRoomRequest
 	JoinRoomResponse
+	JoinRoomEvent
 	LeaveRoomRequest
 	LeaveRoomResponse
+	LeaveRoomEvent
 	ListRoomsRequest
 	ListRoomsResponse
+	RoomInfoRequest
+	RoomInfoResponse
 */
 package proto_lobby
 
@@ -122,6 +126,36 @@ func (x *LeaveRoomResponse_ErrorCode) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*x = LeaveRoomResponse_ErrorCode(value)
+	return nil
+}
+
+type RoomInfoResponse_ErrorCode int32
+
+const (
+	RoomInfoResponse_ROOM_DOES_NOT_EXIST RoomInfoResponse_ErrorCode = 0
+)
+
+var RoomInfoResponse_ErrorCode_name = map[int32]string{
+	0: "ROOM_DOES_NOT_EXIST",
+}
+var RoomInfoResponse_ErrorCode_value = map[string]int32{
+	"ROOM_DOES_NOT_EXIST": 0,
+}
+
+func (x RoomInfoResponse_ErrorCode) Enum() *RoomInfoResponse_ErrorCode {
+	p := new(RoomInfoResponse_ErrorCode)
+	*p = x
+	return p
+}
+func (x RoomInfoResponse_ErrorCode) String() string {
+	return proto.EnumName(RoomInfoResponse_ErrorCode_name, int32(x))
+}
+func (x *RoomInfoResponse_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(RoomInfoResponse_ErrorCode_value, data, "RoomInfoResponse_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = RoomInfoResponse_ErrorCode(value)
 	return nil
 }
 
@@ -331,6 +365,22 @@ func (m *JoinRoomResponse) GetErrorCode() JoinRoomResponse_ErrorCode {
 	return JoinRoomResponse_ROOM_DOES_NOT_EXIST
 }
 
+type JoinRoomEvent struct {
+	Player           *Player `protobuf:"bytes,1,req,name=player" json:"player,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *JoinRoomEvent) Reset()         { *m = JoinRoomEvent{} }
+func (m *JoinRoomEvent) String() string { return proto.CompactTextString(m) }
+func (*JoinRoomEvent) ProtoMessage()    {}
+
+func (m *JoinRoomEvent) GetPlayer() *Player {
+	if m != nil {
+		return m.Player
+	}
+	return nil
+}
+
 // Requires proto_headers.AuthorizationHeader to be sent as header.
 type LeaveRoomRequest struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -354,6 +404,22 @@ func (m *LeaveRoomResponse) GetErrorCode() LeaveRoomResponse_ErrorCode {
 		return *m.ErrorCode
 	}
 	return LeaveRoomResponse_NOT_IN_ROOM
+}
+
+type LeaveRoomEvent struct {
+	PlayerId         *uint64 `protobuf:"varint,1,req,name=player_id" json:"player_id,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *LeaveRoomEvent) Reset()         { *m = LeaveRoomEvent{} }
+func (m *LeaveRoomEvent) String() string { return proto.CompactTextString(m) }
+func (*LeaveRoomEvent) ProtoMessage()    {}
+
+func (m *LeaveRoomEvent) GetPlayerId() uint64 {
+	if m != nil && m.PlayerId != nil {
+		return *m.PlayerId
+	}
+	return 0
 }
 
 // Requires proto_headers.AuthorizationHeader to be sent as header.
@@ -381,8 +447,49 @@ func (m *ListRoomsResponse) GetRooms() []*Room {
 	return nil
 }
 
+type RoomInfoRequest struct {
+	RoomId           *string `protobuf:"bytes,1,req,name=room_id" json:"room_id,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *RoomInfoRequest) Reset()         { *m = RoomInfoRequest{} }
+func (m *RoomInfoRequest) String() string { return proto.CompactTextString(m) }
+func (*RoomInfoRequest) ProtoMessage()    {}
+
+func (m *RoomInfoRequest) GetRoomId() string {
+	if m != nil && m.RoomId != nil {
+		return *m.RoomId
+	}
+	return ""
+}
+
+type RoomInfoResponse struct {
+	ErrorCode        *RoomInfoResponse_ErrorCode `protobuf:"varint,1,opt,name=error_code,enum=proto_lobby.RoomInfoResponse_ErrorCode" json:"error_code,omitempty"`
+	Room             *Room                       `protobuf:"bytes,2,opt,name=room" json:"room,omitempty"`
+	XXX_unrecognized []byte                      `json:"-"`
+}
+
+func (m *RoomInfoResponse) Reset()         { *m = RoomInfoResponse{} }
+func (m *RoomInfoResponse) String() string { return proto.CompactTextString(m) }
+func (*RoomInfoResponse) ProtoMessage()    {}
+
+func (m *RoomInfoResponse) GetErrorCode() RoomInfoResponse_ErrorCode {
+	if m != nil && m.ErrorCode != nil {
+		return *m.ErrorCode
+	}
+	return RoomInfoResponse_ROOM_DOES_NOT_EXIST
+}
+
+func (m *RoomInfoResponse) GetRoom() *Room {
+	if m != nil {
+		return m.Room
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterEnum("proto_lobby.CreateRoomResponse_ErrorCode", CreateRoomResponse_ErrorCode_name, CreateRoomResponse_ErrorCode_value)
 	proto.RegisterEnum("proto_lobby.JoinRoomResponse_ErrorCode", JoinRoomResponse_ErrorCode_name, JoinRoomResponse_ErrorCode_value)
 	proto.RegisterEnum("proto_lobby.LeaveRoomResponse_ErrorCode", LeaveRoomResponse_ErrorCode_name, LeaveRoomResponse_ErrorCode_value)
+	proto.RegisterEnum("proto_lobby.RoomInfoResponse_ErrorCode", RoomInfoResponse_ErrorCode_name, RoomInfoResponse_ErrorCode_value)
 }
