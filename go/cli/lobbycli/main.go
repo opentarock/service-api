@@ -18,9 +18,10 @@ func main() {
 		fmt.Printf("Usage: %s ACTION [ARGS...]\n", os.Args[0])
 		os.Exit(1)
 	}
-	client, err := client.NewLobbyClientNanomsg()
-	defer client.Close()
+	client := client.NewLobbyClientNanomsg()
+	err := client.Connect("tcp://localhost:7001")
 	exitError(err)
+	defer client.Close()
 	switch os.Args[1] {
 	case "create_room":
 		userId, err := strconv.ParseUint(getArg(2), 10, 64)

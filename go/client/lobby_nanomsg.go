@@ -2,11 +2,7 @@ package client
 
 import (
 	"log"
-	"time"
 
-	nmsg "github.com/op/go-nanomsg"
-
-	"github.com/opentarock/service-api/go/proto"
 	"github.com/opentarock/service-api/go/proto_headers"
 	"github.com/opentarock/service-api/go/proto_lobby"
 )
@@ -14,30 +10,13 @@ import (
 // UserClientNanomsg is an implementation of UserClient using nanomsg for message
 // transport and protobuf for message serialization.
 type LobbyClientNanomsg struct {
-	lobbyServiceSocket *nmsg.ReqSocket
+	client *ReqClient
 }
 
-func NewLobbyClientNanomsg() (*LobbyClientNanomsg, error) {
-	socket, err := nmsg.NewReqSocket()
-	if err != nil {
-		return nil, err
-	}
-	const timeout = 1 * time.Second
-	err = socket.SetSendTimeout(timeout)
-	err = socket.SetRecvTimeout(timeout)
-	if err != nil {
-		return nil, err
-	}
-
-	endpoint, err := socket.Connect("tcp://127.0.0.1:7001")
-	if err != nil {
-		return nil, err
-	}
-	log.Printf("Connected to endpoint: %s", endpoint.Address)
-
+func NewLobbyClientNanomsg() *LobbyClientNanomsg {
 	return &LobbyClientNanomsg{
-		lobbyServiceSocket: socket,
-	}, nil
+		client: NewReqClient(),
+	}
 }
 
 func (s *LobbyClientNanomsg) CreateRoom(
@@ -50,7 +29,7 @@ func (s *LobbyClientNanomsg) CreateRoom(
 		Options: options,
 	}
 
-	responseMsg, err := s.rpcCall(request, auth)
+	responseMsg, err := s.client.Request(request, auth)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +50,7 @@ func (s *LobbyClientNanomsg) JoinRoom(
 		RoomId: &roomId,
 	}
 
-	responseMsg, err := s.rpcCall(request, auth)
+	responseMsg, err := s.client.Request(request, auth)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +68,7 @@ func (s *LobbyClientNanomsg) LeaveRoom(
 
 	request := &proto_lobby.LeaveRoomRequest{}
 
-	responseMsg, err := s.rpcCall(request, auth)
+	responseMsg, err := s.client.Request(request, auth)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +86,7 @@ func (s *LobbyClientNanomsg) ListRooms(
 
 	request := &proto_lobby.ListRoomsRequest{}
 
-	responseMsg, err := s.rpcCall(request, auth)
+	responseMsg, err := s.client.Request(request, auth)
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +104,7 @@ func (s *LobbyClientNanomsg) RoomInfo(roomId string) (*proto_lobby.RoomInfoRespo
 		RoomId: &roomId,
 	}
 
-	responseMsg, err := s.rpcCall(request)
+	responseMsg, err := s.client.Request(request)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +122,7 @@ func (s *LobbyClientNanomsg) StartGame(
 
 	request := &proto_lobby.StartGameRequest{}
 
-	responseMsg, err := s.rpcCall(request, auth)
+	responseMsg, err := s.client.Request(request, auth)
 	if err != nil {
 		return nil, err
 	}
@@ -164,7 +143,7 @@ func (s *LobbyClientNanomsg) PlayerReady(
 		State: &state,
 	}
 
-	responseMsg, err := s.rpcCall(request, auth)
+	responseMsg, err := s.client.Request(request, auth)
 	if err != nil {
 		return nil, err
 	}
@@ -177,51 +156,13 @@ func (s *LobbyClientNanomsg) PlayerReady(
 	return &response, nil
 }
 
-func (s *LobbyClientNanomsg) rpcCall(
-	request proto.ProtobufMessage,
-	headers ...proto.ProtobufMessage) (*proto.Message, error) {
-
-	msg, err := proto.MarshalHeaders(request, headers)
-	if err != nil {
-		return nil, err
-	}
-
-	err = s.sendMsg(msg)
-	if err != nil {
-		return nil, err
-	}
-	responseMsg, err := s.recvMsg()
-	if err != nil {
-		return nil, err
-	}
-
-	return responseMsg, nil
-}
-
-func (s *LobbyClientNanomsg) sendMsg(msg *proto.Message) error {
-	packed, err := msg.Pack()
-	if err != nil {
-		return err
-	}
-	_, err = s.lobbyServiceSocket.Send(packed, 0)
-	return err
-}
-
-func (s *LobbyClientNanomsg) recvMsg() (*proto.Message, error) {
-	responseData, err := s.lobbyServiceSocket.Recv(0)
-	if err != nil {
-		return nil, err
-	}
-	responseMsg, err := proto.Parse(responseData)
-	if err != nil {
-		return nil, err
-	}
-	return responseMsg, err
+func (s *LobbyClientNanomsg) Connect(address string) error {
+	return s.client.Connect(address)
 }
 
 // Close closes all the sockets and cleans up all the resources associated with
 // this client.
 // This method might block until all the resources are properly discarded.
-func (s *LobbyClientNanomsg) Close() {
-	s.lobbyServiceSocket.Close()
+func (s *LobbyClientNanomsg) Close() error {
+	return s.client.Close()
 }
