@@ -22,4 +22,10 @@ type LobbyClient interface {
 		auth *proto_headers.AuthorizationHeader) (*proto_lobby.ListRoomsResponse, error)
 
 	RoomInfo(roomId string) (*proto_lobby.RoomInfoResponse, error)
+
+	StartGame(auth *proto_headers.AuthorizationHeader) (*proto_lobby.StartGameResponse, error)
+
+	PlayerReady(
+		auth *proto_headers.AuthorizationHeader,
+		state string) (*proto_lobby.PlayerReadyResponse, error)
 }

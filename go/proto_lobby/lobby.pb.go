@@ -24,6 +24,12 @@ It has these top-level messages:
 	ListRoomsResponse
 	RoomInfoRequest
 	RoomInfoResponse
+	StartGameRequest
+	StartGameResponse
+	StartGameEvent
+	PlayerReadyRequest
+	PlayerReadyResponse
+	PlayerReadyEvent
 */
 package proto_lobby
 
@@ -102,14 +108,17 @@ func (x *JoinRoomResponse_ErrorCode) UnmarshalJSON(data []byte) error {
 type LeaveRoomResponse_ErrorCode int32
 
 const (
-	LeaveRoomResponse_NOT_IN_ROOM LeaveRoomResponse_ErrorCode = 0
+	LeaveRoomResponse_NOT_IN_ROOM       LeaveRoomResponse_ErrorCode = 0
+	LeaveRoomResponse_START_IN_PROGRESS LeaveRoomResponse_ErrorCode = 1
 )
 
 var LeaveRoomResponse_ErrorCode_name = map[int32]string{
 	0: "NOT_IN_ROOM",
+	1: "START_IN_PROGRESS",
 }
 var LeaveRoomResponse_ErrorCode_value = map[string]int32{
-	"NOT_IN_ROOM": 0,
+	"NOT_IN_ROOM":       0,
+	"START_IN_PROGRESS": 1,
 }
 
 func (x LeaveRoomResponse_ErrorCode) Enum() *LeaveRoomResponse_ErrorCode {
@@ -159,6 +168,81 @@ func (x *RoomInfoResponse_ErrorCode) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type StartGameResponse_ErrorCode int32
+
+const (
+	StartGameResponse_NOT_IN_ROOM     StartGameResponse_ErrorCode = 0
+	StartGameResponse_NOT_OWNER       StartGameResponse_ErrorCode = 1
+	StartGameResponse_ALREADY_STARTED StartGameResponse_ErrorCode = 2
+)
+
+var StartGameResponse_ErrorCode_name = map[int32]string{
+	0: "NOT_IN_ROOM",
+	1: "NOT_OWNER",
+	2: "ALREADY_STARTED",
+}
+var StartGameResponse_ErrorCode_value = map[string]int32{
+	"NOT_IN_ROOM":     0,
+	"NOT_OWNER":       1,
+	"ALREADY_STARTED": 2,
+}
+
+func (x StartGameResponse_ErrorCode) Enum() *StartGameResponse_ErrorCode {
+	p := new(StartGameResponse_ErrorCode)
+	*p = x
+	return p
+}
+func (x StartGameResponse_ErrorCode) String() string {
+	return proto.EnumName(StartGameResponse_ErrorCode_name, int32(x))
+}
+func (x *StartGameResponse_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(StartGameResponse_ErrorCode_value, data, "StartGameResponse_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = StartGameResponse_ErrorCode(value)
+	return nil
+}
+
+type PlayerReadyResponse_ErrorCode int32
+
+const (
+	PlayerReadyResponse_NOT_IN_ROOM   PlayerReadyResponse_ErrorCode = 0
+	PlayerReadyResponse_UNEXPECTED    PlayerReadyResponse_ErrorCode = 1
+	PlayerReadyResponse_ALREADY_READY PlayerReadyResponse_ErrorCode = 2
+	PlayerReadyResponse_INVALID_STATE PlayerReadyResponse_ErrorCode = 3
+)
+
+var PlayerReadyResponse_ErrorCode_name = map[int32]string{
+	0: "NOT_IN_ROOM",
+	1: "UNEXPECTED",
+	2: "ALREADY_READY",
+	3: "INVALID_STATE",
+}
+var PlayerReadyResponse_ErrorCode_value = map[string]int32{
+	"NOT_IN_ROOM":   0,
+	"UNEXPECTED":    1,
+	"ALREADY_READY": 2,
+	"INVALID_STATE": 3,
+}
+
+func (x PlayerReadyResponse_ErrorCode) Enum() *PlayerReadyResponse_ErrorCode {
+	p := new(PlayerReadyResponse_ErrorCode)
+	*p = x
+	return p
+}
+func (x PlayerReadyResponse_ErrorCode) String() string {
+	return proto.EnumName(PlayerReadyResponse_ErrorCode_name, int32(x))
+}
+func (x *PlayerReadyResponse_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(PlayerReadyResponse_ErrorCode_value, data, "PlayerReadyResponse_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = PlayerReadyResponse_ErrorCode(value)
+	return nil
+}
+
 type Player struct {
 	UserId           *uint64 `protobuf:"varint,1,req,name=user_id" json:"user_id,omitempty"`
 	Nickname         *string `protobuf:"bytes,2,req,name=nickname" json:"nickname,omitempty"`
@@ -186,7 +270,7 @@ func (m *Player) GetNickname() string {
 type Room struct {
 	Id               *string      `protobuf:"bytes,1,req,name=id" json:"id,omitempty"`
 	Name             *string      `protobuf:"bytes,2,req,name=name" json:"name,omitempty"`
-	Options          *RoomOptions `protobuf:"bytes,3,req,name=options" json:"options,omitempty"`
+	Options          *RoomOptions `protobuf:"bytes,3,opt,name=options" json:"options,omitempty"`
 	Owner            *Player      `protobuf:"bytes,4,req,name=owner" json:"owner,omitempty"`
 	Players          []*Player    `protobuf:"bytes,5,rep,name=players" json:"players,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
@@ -487,9 +571,109 @@ func (m *RoomInfoResponse) GetRoom() *Room {
 	return nil
 }
 
+// Requires proto_headers.AuthorizationHeader to be sent as header.
+type StartGameRequest struct {
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *StartGameRequest) Reset()         { *m = StartGameRequest{} }
+func (m *StartGameRequest) String() string { return proto.CompactTextString(m) }
+func (*StartGameRequest) ProtoMessage()    {}
+
+type StartGameResponse struct {
+	ErrorCode        *StartGameResponse_ErrorCode `protobuf:"varint,1,opt,name=error_code,enum=proto_lobby.StartGameResponse_ErrorCode" json:"error_code,omitempty"`
+	XXX_unrecognized []byte                       `json:"-"`
+}
+
+func (m *StartGameResponse) Reset()         { *m = StartGameResponse{} }
+func (m *StartGameResponse) String() string { return proto.CompactTextString(m) }
+func (*StartGameResponse) ProtoMessage()    {}
+
+func (m *StartGameResponse) GetErrorCode() StartGameResponse_ErrorCode {
+	if m != nil && m.ErrorCode != nil {
+		return *m.ErrorCode
+	}
+	return StartGameResponse_NOT_IN_ROOM
+}
+
+type StartGameEvent struct {
+	RoomId           *string `protobuf:"bytes,1,req,name=room_id" json:"room_id,omitempty"`
+	State            *string `protobuf:"bytes,2,req,name=state" json:"state,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *StartGameEvent) Reset()         { *m = StartGameEvent{} }
+func (m *StartGameEvent) String() string { return proto.CompactTextString(m) }
+func (*StartGameEvent) ProtoMessage()    {}
+
+func (m *StartGameEvent) GetRoomId() string {
+	if m != nil && m.RoomId != nil {
+		return *m.RoomId
+	}
+	return ""
+}
+
+func (m *StartGameEvent) GetState() string {
+	if m != nil && m.State != nil {
+		return *m.State
+	}
+	return ""
+}
+
+// Requires proto_headers.AuthorizationHeader to be sent as header.
+type PlayerReadyRequest struct {
+	State            *string `protobuf:"bytes,1,req,name=state" json:"state,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *PlayerReadyRequest) Reset()         { *m = PlayerReadyRequest{} }
+func (m *PlayerReadyRequest) String() string { return proto.CompactTextString(m) }
+func (*PlayerReadyRequest) ProtoMessage()    {}
+
+func (m *PlayerReadyRequest) GetState() string {
+	if m != nil && m.State != nil {
+		return *m.State
+	}
+	return ""
+}
+
+type PlayerReadyResponse struct {
+	ErrorCode        *PlayerReadyResponse_ErrorCode `protobuf:"varint,1,opt,name=error_code,enum=proto_lobby.PlayerReadyResponse_ErrorCode" json:"error_code,omitempty"`
+	XXX_unrecognized []byte                         `json:"-"`
+}
+
+func (m *PlayerReadyResponse) Reset()         { *m = PlayerReadyResponse{} }
+func (m *PlayerReadyResponse) String() string { return proto.CompactTextString(m) }
+func (*PlayerReadyResponse) ProtoMessage()    {}
+
+func (m *PlayerReadyResponse) GetErrorCode() PlayerReadyResponse_ErrorCode {
+	if m != nil && m.ErrorCode != nil {
+		return *m.ErrorCode
+	}
+	return PlayerReadyResponse_NOT_IN_ROOM
+}
+
+type PlayerReadyEvent struct {
+	UserId           *uint64 `protobuf:"varint,1,req,name=user_id" json:"user_id,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *PlayerReadyEvent) Reset()         { *m = PlayerReadyEvent{} }
+func (m *PlayerReadyEvent) String() string { return proto.CompactTextString(m) }
+func (*PlayerReadyEvent) ProtoMessage()    {}
+
+func (m *PlayerReadyEvent) GetUserId() uint64 {
+	if m != nil && m.UserId != nil {
+		return *m.UserId
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterEnum("proto_lobby.CreateRoomResponse_ErrorCode", CreateRoomResponse_ErrorCode_name, CreateRoomResponse_ErrorCode_value)
 	proto.RegisterEnum("proto_lobby.JoinRoomResponse_ErrorCode", JoinRoomResponse_ErrorCode_name, JoinRoomResponse_ErrorCode_value)
 	proto.RegisterEnum("proto_lobby.LeaveRoomResponse_ErrorCode", LeaveRoomResponse_ErrorCode_name, LeaveRoomResponse_ErrorCode_value)
 	proto.RegisterEnum("proto_lobby.RoomInfoResponse_ErrorCode", RoomInfoResponse_ErrorCode_name, RoomInfoResponse_ErrorCode_value)
+	proto.RegisterEnum("proto_lobby.StartGameResponse_ErrorCode", StartGameResponse_ErrorCode_name, StartGameResponse_ErrorCode_value)
+	proto.RegisterEnum("proto_lobby.PlayerReadyResponse_ErrorCode", PlayerReadyResponse_ErrorCode_name, PlayerReadyResponse_ErrorCode_value)
 }

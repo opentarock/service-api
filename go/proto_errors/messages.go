@@ -34,6 +34,10 @@ func NewInternalErrorResponse() *ErrorResponse {
 	return NewInternalError("There was a problem sending a response.")
 }
 
+func NewInternalErrorUnknown() *ErrorResponse {
+	return NewInternalError("Unknown error occured.")
+}
+
 func NewMissingHeader(ty proto.Type) *ErrorResponse {
 	return &ErrorResponse{
 		Error:       Error_MISSING_HEADER.Enum(),

@@ -1,14 +1,14 @@
 package proto_lobby;
 
 message Player {
-  required uint64 user_id= 1;
+  required uint64 user_id = 1;
   required string nickname = 2;
 }
 
 message Room {
   required string id = 1;
   required string name = 2;
-  required RoomOptions options = 3;
+  optional RoomOptions options = 3;
   required Player owner = 4;
   repeated Player players = 5;
 }
@@ -58,6 +58,7 @@ message LeaveRoomRequest {}
 message LeaveRoomResponse {
   enum ErrorCode {
     NOT_IN_ROOM = 0;
+    START_IN_PROGRESS = 1;
   }
   optional ErrorCode error_code = 1;
 }
@@ -83,4 +84,40 @@ message RoomInfoResponse {
   }
   optional ErrorCode error_code = 1;
   optional Room room = 2;
+}
+
+// Requires proto_headers.AuthorizationHeader to be sent as header.
+message StartGameRequest {}
+
+message StartGameResponse {
+  enum ErrorCode {
+    NOT_IN_ROOM = 0;
+    NOT_OWNER = 1;
+    ALREADY_STARTED = 2;
+  }
+  optional ErrorCode error_code = 1;
+}
+
+message StartGameEvent {
+  required string room_id = 1;
+  required string state = 2;
+}
+
+// Requires proto_headers.AuthorizationHeader to be sent as header.
+message PlayerReadyRequest {
+  required string state = 1;
+}
+
+message PlayerReadyResponse {
+  enum ErrorCode {
+    NOT_IN_ROOM = 0;
+    UNEXPECTED = 1;
+    ALREADY_READY = 2;
+    INVALID_STATE = 3;
+  }
+  optional ErrorCode error_code = 1;
+}
+
+message PlayerReadyEvent {
+  required uint64 user_id = 1;
 }

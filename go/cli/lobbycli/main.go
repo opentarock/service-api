@@ -19,6 +19,7 @@ func main() {
 		os.Exit(1)
 	}
 	client, err := client.NewLobbyClientNanomsg()
+	defer client.Close()
 	exitError(err)
 	switch os.Args[1] {
 	case "create_room":
@@ -77,6 +78,32 @@ func main() {
 	case "room_info":
 		roomId := getArg(2)
 		response, err := client.RoomInfo(roomId)
+		exitError(err)
+		result, err := json.Marshal(response)
+		exitError(err)
+		fmt.Println(string(result))
+	case "start_game":
+		userId, err := strconv.ParseUint(getArg(2), 10, 64)
+		exitError(err)
+		auth := proto_headers.AuthorizationHeader{
+			UserId:      pbuf.Uint64(userId),
+			AccessToken: pbuf.String("token"),
+		}
+		response, err := client.StartGame(&auth)
+		exitError(err)
+		result, err := json.Marshal(response)
+		exitError(err)
+		fmt.Println(string(result))
+	case "player_ready":
+		userId, err := strconv.ParseUint(getArg(2), 10, 64)
+		exitError(err)
+		auth := proto_headers.AuthorizationHeader{
+			UserId:      pbuf.Uint64(userId),
+			AccessToken: pbuf.String("token"),
+		}
+		state := getArg(3)
+		exitError(err)
+		response, err := client.PlayerReady(&auth, state)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)

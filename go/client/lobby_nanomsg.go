@@ -138,6 +138,45 @@ func (s *LobbyClientNanomsg) RoomInfo(roomId string) (*proto_lobby.RoomInfoRespo
 	return &response, nil
 }
 
+func (s *LobbyClientNanomsg) StartGame(
+	auth *proto_headers.AuthorizationHeader) (*proto_lobby.StartGameResponse, error) {
+
+	request := &proto_lobby.StartGameRequest{}
+
+	responseMsg, err := s.rpcCall(request, auth)
+	if err != nil {
+		return nil, err
+	}
+
+	var response proto_lobby.StartGameResponse
+	err = responseMsg.Unmarshal(&response)
+	if err != nil {
+		log.Println(err)
+	}
+	return &response, nil
+}
+
+func (s *LobbyClientNanomsg) PlayerReady(
+	auth *proto_headers.AuthorizationHeader,
+	state string) (*proto_lobby.PlayerReadyResponse, error) {
+
+	request := &proto_lobby.PlayerReadyRequest{
+		State: &state,
+	}
+
+	responseMsg, err := s.rpcCall(request, auth)
+	if err != nil {
+		return nil, err
+	}
+
+	var response proto_lobby.PlayerReadyResponse
+	err = responseMsg.Unmarshal(&response)
+	if err != nil {
+		log.Println(err)
+	}
+	return &response, nil
+}
+
 func (s *LobbyClientNanomsg) rpcCall(
 	request proto.ProtobufMessage,
 	headers ...proto.ProtobufMessage) (*proto.Message, error) {
