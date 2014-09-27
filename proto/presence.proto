@@ -1,0 +1,31 @@
+package proto_presence;
+
+message Device {
+  enum Type {
+    ANDROID_GCM = 0;
+  }
+  required Type type = 1;
+
+  // Android GCM fields
+  optional string gcm_registration_id = 2;
+}
+
+message UpdateUserStatusRequest {
+  enum Status {
+    OFFLINE = 1;
+    ONLINE = 2;
+  }
+  required string user_id = 1;
+  optional Status status = 2;
+  optional Device device = 3;
+}
+
+message UpdateUserStatusResponse {}
+
+message GetUserDevicesRequest {
+  required string user_id = 1;
+}
+
+message GetUserDevicesResponse {
+  repeated Device devices = 1;
+}

@@ -3,8 +3,8 @@ package proto_notify
 import "github.com/opentarock/service-api/go/proto"
 
 const (
-	MessageUsersHeaderMessage   = 0x090000
-	MessageUsersResponseMessage = 0x090000
+	MessageUsersHeaderMessage   = 0x090001
+	MessageUsersResponseMessage = 0x090002
 )
 
 func (m *MessageUsersHeader) GetMessageType() proto.Type {
