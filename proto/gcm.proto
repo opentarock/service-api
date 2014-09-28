@@ -1,0 +1,13 @@
+package proto_gcm;
+
+message SendMessageRequest {
+  repeated string registration_ids = 1;
+  optional string collapse_key = 2;
+  optional string data = 3;
+  optional bool delay_while_idle = 4;
+  optional uint64 time_to_live = 5;
+  optional string restricted_package_name = 6;
+  optional bool dry_run = 7;
+}
+
+message SendMessageResponse {}
