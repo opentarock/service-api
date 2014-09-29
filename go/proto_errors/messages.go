@@ -18,14 +18,14 @@ func (m *ErrorResponse) GetMessageType() proto.Type {
 
 func NewMalformedMessageUnpack() *ErrorResponse {
 	return &ErrorResponse{
-		Error:       Error_MALFORMED_MESSAGE.Enum(),
+		ErrorCode:   ErrorCode_MALFORMED_MESSAGE.Enum(),
 		Description: pbuf.String("Unable to unpack the message."),
 	}
 }
 
 func NewInternalError(msg string) *ErrorResponse {
 	return &ErrorResponse{
-		Error:       Error_INTERNAL_ERROR.Enum(),
+		ErrorCode:   ErrorCode_INTERNAL_ERROR.Enum(),
 		Description: &msg,
 	}
 }
@@ -40,28 +40,39 @@ func NewInternalErrorUnknown() *ErrorResponse {
 
 func NewMissingHeader(ty proto.Type) *ErrorResponse {
 	return &ErrorResponse{
-		Error:       Error_MISSING_HEADER.Enum(),
+		ErrorCode:   ErrorCode_MISSING_HEADER.Enum(),
 		Description: pbuf.String(fmt.Sprintf("Missing header with type=%X", ty)),
+	}
+}
+
+func NewMissingFieldError(name string) *ErrorResponse {
+	return &ErrorResponse{
+		ErrorCode:   ErrorCode_MISSING_FIELD.Enum(),
+		Description: pbuf.String(fmt.Sprintf("Missing required field: '%s'", name)),
 	}
 }
 
 func NewUnsupportedMessage(ty proto.Type) *ErrorResponse {
 	return &ErrorResponse{
-		Error:       Error_INTERNAL_ERROR.Enum(),
+		ErrorCode:   ErrorCode_INTERNAL_ERROR.Enum(),
 		Description: pbuf.String(fmt.Sprintf("Message of type=%X is not supported by this service.", ty)),
 	}
 }
 
 func NewMalformedMessage(ty proto.Type) *ErrorResponse {
 	return &ErrorResponse{
-		Error:       Error_MALFORMED_MESSAGE.Enum(),
+		ErrorCode:   ErrorCode_MALFORMED_MESSAGE.Enum(),
 		Description: pbuf.String(fmt.Sprintf("Message of type=%X could no not be decoded.", ty)),
 	}
 }
 
 func NewEmptyMessage() *ErrorResponse {
 	return &ErrorResponse{
-		Error:       Error_EMPTY_MESSAGE.Enum(),
+		ErrorCode:   ErrorCode_EMPTY_MESSAGE.Enum(),
 		Description: pbuf.String("Unexpected empty message"),
 	}
+}
+
+func (e *ErrorResponse) Error() string {
+	return fmt.Sprintf("%s (type %s)", e.GetDescription(), e.GetErrorCode().String())
 }

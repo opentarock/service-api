@@ -22,63 +22,66 @@ var _ = proto.Marshal
 var _ = &json.SyntaxError{}
 var _ = math.Inf
 
-type Error int32
+type ErrorCode int32
 
 const (
-	Error_INTERNAL_ERROR      Error = 0
-	Error_MISSING_HEADER      Error = 1
-	Error_UNSUPPORTED_MESSAGE Error = 2
-	Error_MALFORMED_MESSAGE   Error = 3
-	Error_EMPTY_MESSAGE       Error = 4
+	ErrorCode_INTERNAL_ERROR      ErrorCode = 0
+	ErrorCode_MISSING_HEADER      ErrorCode = 1
+	ErrorCode_UNSUPPORTED_MESSAGE ErrorCode = 2
+	ErrorCode_MALFORMED_MESSAGE   ErrorCode = 3
+	ErrorCode_EMPTY_MESSAGE       ErrorCode = 4
+	ErrorCode_MISSING_FIELD       ErrorCode = 5
 )
 
-var Error_name = map[int32]string{
+var ErrorCode_name = map[int32]string{
 	0: "INTERNAL_ERROR",
 	1: "MISSING_HEADER",
 	2: "UNSUPPORTED_MESSAGE",
 	3: "MALFORMED_MESSAGE",
 	4: "EMPTY_MESSAGE",
+	5: "MISSING_FIELD",
 }
-var Error_value = map[string]int32{
+var ErrorCode_value = map[string]int32{
 	"INTERNAL_ERROR":      0,
 	"MISSING_HEADER":      1,
 	"UNSUPPORTED_MESSAGE": 2,
 	"MALFORMED_MESSAGE":   3,
 	"EMPTY_MESSAGE":       4,
+	"MISSING_FIELD":       5,
 }
 
-func (x Error) Enum() *Error {
-	p := new(Error)
+func (x ErrorCode) Enum() *ErrorCode {
+	p := new(ErrorCode)
 	*p = x
 	return p
 }
-func (x Error) String() string {
-	return proto.EnumName(Error_name, int32(x))
+func (x ErrorCode) String() string {
+	return proto.EnumName(ErrorCode_name, int32(x))
 }
-func (x *Error) UnmarshalJSON(data []byte) error {
-	value, err := proto.UnmarshalJSONEnum(Error_value, data, "Error")
+func (x *ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(ErrorCode_value, data, "ErrorCode")
 	if err != nil {
 		return err
 	}
-	*x = Error(value)
+	*x = ErrorCode(value)
 	return nil
 }
 
 type ErrorResponse struct {
-	Error            *Error  `protobuf:"varint,1,req,name=error,enum=proto_errors.Error" json:"error,omitempty"`
-	Description      *string `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	ErrorCode        *ErrorCode `protobuf:"varint,1,req,name=error_code,enum=proto_errors.ErrorCode" json:"error_code,omitempty"`
+	Description      *string    `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
+	XXX_unrecognized []byte     `json:"-"`
 }
 
 func (m *ErrorResponse) Reset()         { *m = ErrorResponse{} }
 func (m *ErrorResponse) String() string { return proto.CompactTextString(m) }
 func (*ErrorResponse) ProtoMessage()    {}
 
-func (m *ErrorResponse) GetError() Error {
-	if m != nil && m.Error != nil {
-		return *m.Error
+func (m *ErrorResponse) GetErrorCode() ErrorCode {
+	if m != nil && m.ErrorCode != nil {
+		return *m.ErrorCode
 	}
-	return Error_INTERNAL_ERROR
+	return ErrorCode_INTERNAL_ERROR
 }
 
 func (m *ErrorResponse) GetDescription() string {
@@ -89,5 +92,5 @@ func (m *ErrorResponse) GetDescription() string {
 }
 
 func init() {
-	proto.RegisterEnum("proto_errors.Error", Error_name, Error_value)
+	proto.RegisterEnum("proto_errors.ErrorCode", ErrorCode_name, ErrorCode_value)
 }

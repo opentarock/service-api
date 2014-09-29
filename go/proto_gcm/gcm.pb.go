@@ -9,6 +9,7 @@ It is generated from these files:
 	gcm.proto
 
 It has these top-level messages:
+	Parameters
 	SendMessageRequest
 	SendMessageResponse
 */
@@ -23,15 +24,81 @@ var _ = proto.Marshal
 var _ = &json.SyntaxError{}
 var _ = math.Inf
 
+type SendMessageResponse_ErrorCode int32
+
+const (
+	SendMessageResponse_MALFORMED_JSON SendMessageResponse_ErrorCode = 0
+)
+
+var SendMessageResponse_ErrorCode_name = map[int32]string{
+	0: "MALFORMED_JSON",
+}
+var SendMessageResponse_ErrorCode_value = map[string]int32{
+	"MALFORMED_JSON": 0,
+}
+
+func (x SendMessageResponse_ErrorCode) Enum() *SendMessageResponse_ErrorCode {
+	p := new(SendMessageResponse_ErrorCode)
+	*p = x
+	return p
+}
+func (x SendMessageResponse_ErrorCode) String() string {
+	return proto.EnumName(SendMessageResponse_ErrorCode_name, int32(x))
+}
+func (x *SendMessageResponse_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(SendMessageResponse_ErrorCode_value, data, "SendMessageResponse_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = SendMessageResponse_ErrorCode(value)
+	return nil
+}
+
+type Parameters struct {
+	CollapseKey           *string `protobuf:"bytes,1,opt,name=collapse_key" json:"collapse_key,omitempty"`
+	DelayWhileIdle        *bool   `protobuf:"varint,2,opt,name=delay_while_idle" json:"delay_while_idle,omitempty"`
+	TimeToLive            *uint64 `protobuf:"varint,3,opt,name=time_to_live" json:"time_to_live,omitempty"`
+	RestrictedPackageName *string `protobuf:"bytes,4,opt,name=restricted_package_name" json:"restricted_package_name,omitempty"`
+	XXX_unrecognized      []byte  `json:"-"`
+}
+
+func (m *Parameters) Reset()         { *m = Parameters{} }
+func (m *Parameters) String() string { return proto.CompactTextString(m) }
+func (*Parameters) ProtoMessage()    {}
+
+func (m *Parameters) GetCollapseKey() string {
+	if m != nil && m.CollapseKey != nil {
+		return *m.CollapseKey
+	}
+	return ""
+}
+
+func (m *Parameters) GetDelayWhileIdle() bool {
+	if m != nil && m.DelayWhileIdle != nil {
+		return *m.DelayWhileIdle
+	}
+	return false
+}
+
+func (m *Parameters) GetTimeToLive() uint64 {
+	if m != nil && m.TimeToLive != nil {
+		return *m.TimeToLive
+	}
+	return 0
+}
+
+func (m *Parameters) GetRestrictedPackageName() string {
+	if m != nil && m.RestrictedPackageName != nil {
+		return *m.RestrictedPackageName
+	}
+	return ""
+}
+
 type SendMessageRequest struct {
-	RegistrationIds       []string `protobuf:"bytes,1,rep,name=registration_ids" json:"registration_ids,omitempty"`
-	CollapseKey           *string  `protobuf:"bytes,2,opt,name=collapse_key" json:"collapse_key,omitempty"`
-	Data                  *string  `protobuf:"bytes,3,opt,name=data" json:"data,omitempty"`
-	DelayWhileIdle        *bool    `protobuf:"varint,4,opt,name=delay_while_idle" json:"delay_while_idle,omitempty"`
-	TimeToLive            *uint64  `protobuf:"varint,5,opt,name=time_to_live" json:"time_to_live,omitempty"`
-	RestrictedPackageName *string  `protobuf:"bytes,6,opt,name=restricted_package_name" json:"restricted_package_name,omitempty"`
-	DryRun                *bool    `protobuf:"varint,7,opt,name=dry_run" json:"dry_run,omitempty"`
-	XXX_unrecognized      []byte   `json:"-"`
+	RegistrationIds  []string    `protobuf:"bytes,1,rep,name=registration_ids" json:"registration_ids,omitempty"`
+	Data             *string     `protobuf:"bytes,2,opt,name=data" json:"data,omitempty"`
+	Params           *Parameters `protobuf:"bytes,3,opt,name=params" json:"params,omitempty"`
+	XXX_unrecognized []byte      `json:"-"`
 }
 
 func (m *SendMessageRequest) Reset()         { *m = SendMessageRequest{} }
@@ -45,13 +112,6 @@ func (m *SendMessageRequest) GetRegistrationIds() []string {
 	return nil
 }
 
-func (m *SendMessageRequest) GetCollapseKey() string {
-	if m != nil && m.CollapseKey != nil {
-		return *m.CollapseKey
-	}
-	return ""
-}
-
 func (m *SendMessageRequest) GetData() string {
 	if m != nil && m.Data != nil {
 		return *m.Data
@@ -59,41 +119,29 @@ func (m *SendMessageRequest) GetData() string {
 	return ""
 }
 
-func (m *SendMessageRequest) GetDelayWhileIdle() bool {
-	if m != nil && m.DelayWhileIdle != nil {
-		return *m.DelayWhileIdle
+func (m *SendMessageRequest) GetParams() *Parameters {
+	if m != nil {
+		return m.Params
 	}
-	return false
-}
-
-func (m *SendMessageRequest) GetTimeToLive() uint64 {
-	if m != nil && m.TimeToLive != nil {
-		return *m.TimeToLive
-	}
-	return 0
-}
-
-func (m *SendMessageRequest) GetRestrictedPackageName() string {
-	if m != nil && m.RestrictedPackageName != nil {
-		return *m.RestrictedPackageName
-	}
-	return ""
-}
-
-func (m *SendMessageRequest) GetDryRun() bool {
-	if m != nil && m.DryRun != nil {
-		return *m.DryRun
-	}
-	return false
+	return nil
 }
 
 type SendMessageResponse struct {
-	XXX_unrecognized []byte `json:"-"`
+	ErrorCode        *SendMessageResponse_ErrorCode `protobuf:"varint,1,opt,name=error_code,enum=proto_gcm.SendMessageResponse_ErrorCode" json:"error_code,omitempty"`
+	XXX_unrecognized []byte                         `json:"-"`
 }
 
 func (m *SendMessageResponse) Reset()         { *m = SendMessageResponse{} }
 func (m *SendMessageResponse) String() string { return proto.CompactTextString(m) }
 func (*SendMessageResponse) ProtoMessage()    {}
 
+func (m *SendMessageResponse) GetErrorCode() SendMessageResponse_ErrorCode {
+	if m != nil && m.ErrorCode != nil {
+		return *m.ErrorCode
+	}
+	return SendMessageResponse_MALFORMED_JSON
+}
+
 func init() {
+	proto.RegisterEnum("proto_gcm.SendMessageResponse_ErrorCode", SendMessageResponse_ErrorCode_name, SendMessageResponse_ErrorCode_value)
 }

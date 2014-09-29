@@ -1,6 +1,9 @@
 package client
 
-import "github.com/opentarock/service-api/go/proto_gcm"
+import (
+	"github.com/opentarock/service-api/go/proto_gcm"
+	"github.com/opentarock/service-api/go/util/clientutil"
+)
 
 type GcmClientNanomsg struct {
 	client *ReqClient
@@ -12,22 +15,17 @@ func NewGcmClientNanomsg() *GcmClientNanomsg {
 	}
 }
 
-func (c *GcmClientNanomsg) SendMessage(data string, params *GcmParams) (*proto_gcm.SendMessageResponse, error) {
+func (c *GcmClientNanomsg) SendMessage(
+	registrationIds []string,
+	data string,
+	params *proto_gcm.Parameters) (*proto_gcm.SendMessageResponse, error) {
 
 	request := proto_gcm.SendMessageRequest{
-		Data: &data,
+		RegistrationIds: registrationIds,
+		Params:          params,
 	}
-	if params.CollapseKey != "" {
-		request.CollapseKey = &params.CollapseKey
-	}
-	if params.DelayWhileIdle {
-		request.DelayWhileIdle = &params.DelayWhileIdle
-	}
-	if params.TimeToLive != 0 {
-		request.TimeToLive = &params.TimeToLive
-	}
-	if params.RestrictedPackageName != "" {
-		request.RestrictedPackageName = &params.RestrictedPackageName
+	if data != "" {
+		request.Data = &data
 	}
 
 	responseMsg, err := c.client.Request(&request)
@@ -36,6 +34,11 @@ func (c *GcmClientNanomsg) SendMessage(data string, params *GcmParams) (*proto_g
 	}
 
 	var response proto_gcm.SendMessageResponse
+	err = clientutil.TryDecodeError(responseMsg, &response)
+	if err != nil {
+		return nil, err
+	}
+
 	err = responseMsg.Unmarshal(&response)
 	if err != nil {
 		return nil, err

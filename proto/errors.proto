@@ -1,14 +1,15 @@
 package proto_errors;
 
-enum Error {
+enum ErrorCode {
   INTERNAL_ERROR = 0;
   MISSING_HEADER = 1;
   UNSUPPORTED_MESSAGE = 2;
   MALFORMED_MESSAGE = 3;
   EMPTY_MESSAGE = 4;
+  MISSING_FIELD = 5;
 }
 
 message ErrorResponse {
-  required Error error = 1;
+  required ErrorCode error_code = 1;
   optional string description = 2;
 }

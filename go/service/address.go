@@ -4,6 +4,7 @@ import "fmt"
 
 const (
 	PresenceServiceDefaultPort = 9001
+	GcmServiceDefaultPort      = 11001
 )
 
 func MakeServiceBindAddress(port uint) string {
