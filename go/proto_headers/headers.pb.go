@@ -10,6 +10,7 @@ It is generated from these files:
 
 It has these top-level messages:
 	AuthorizationHeader
+	RequestCorrelationHeader
 */
 package proto_headers
 
@@ -42,6 +43,22 @@ func (m *AuthorizationHeader) GetUserId() uint64 {
 func (m *AuthorizationHeader) GetAccessToken() string {
 	if m != nil && m.AccessToken != nil {
 		return *m.AccessToken
+	}
+	return ""
+}
+
+type RequestCorrelationHeader struct {
+	CorrelationId    *string `protobuf:"bytes,1,req,name=correlation_id" json:"correlation_id,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *RequestCorrelationHeader) Reset()         { *m = RequestCorrelationHeader{} }
+func (m *RequestCorrelationHeader) String() string { return proto.CompactTextString(m) }
+func (*RequestCorrelationHeader) ProtoMessage()    {}
+
+func (m *RequestCorrelationHeader) GetCorrelationId() string {
+	if m != nil && m.CorrelationId != nil {
+		return *m.CorrelationId
 	}
 	return ""
 }

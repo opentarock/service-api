@@ -4,3 +4,7 @@ message AuthorizationHeader {
   required uint64 user_id = 1;
   required string access_token = 2;
 }
+
+message RequestCorrelationHeader {
+  required string correlation_id = 1;
+}
