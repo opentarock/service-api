@@ -1,17 +1,35 @@
 package client
 
 import (
+	"code.google.com/p/go.net/context"
 	"github.com/opentarock/service-api/go/proto_gcm"
 	"github.com/opentarock/service-api/go/util/clientutil"
+	"github.com/opentarock/service-api/go/util/contextutil"
 )
 
-type GcmClientNanomsg struct {
-	client *ReqClient
+type GcmClientFactoryNanomsg struct {
+	client *clientutil.ReqClient
 }
 
-func NewGcmClientNanomsg() *GcmClientNanomsg {
+func NewGcmClientFactoryNanomsg() *GcmClientFactoryNanomsg {
+	return &GcmClientFactoryNanomsg{
+		client: clientutil.NewReqClient(),
+	}
+}
+
+func (f *GcmClientFactoryNanomsg) WithContext(ctx context.Context) GcmClient {
+	return NewGcmClientNanomsg(ctx, f.client)
+}
+
+type GcmClientNanomsg struct {
+	ctx    context.Context
+	client *clientutil.ReqClient
+}
+
+func NewGcmClientNanomsg(ctx context.Context, client *clientutil.ReqClient) *GcmClientNanomsg {
 	return &GcmClientNanomsg{
-		client: NewReqClient(),
+		ctx:    ctx,
+		client: client,
 	}
 }
 
@@ -28,18 +46,10 @@ func (c *GcmClientNanomsg) SendMessage(
 		request.Data = &data
 	}
 
-	responseMsg, err := c.client.Request(&request)
-	if err != nil {
-		return nil, err
-	}
-
 	var response proto_gcm.SendMessageResponse
-	err = clientutil.TryDecodeError(responseMsg, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	err = responseMsg.Unmarshal(&response)
+	err := contextutil.Do(c.ctx, func() error {
+		return clientutil.DoRequest(c.client, &request, &response)
+	})
 	if err != nil {
 		return nil, err
 	}

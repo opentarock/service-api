@@ -7,11 +7,16 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
+
+	"code.google.com/p/go.net/context"
 
 	"github.com/docopt/docopt-go"
 	"github.com/opentarock/service-api/go/client"
 	"github.com/opentarock/service-api/go/service"
 )
+
+const timeout = 5 * time.Second
 
 func main() {
 	usage := `Google Cloud Messaging cli client.
@@ -30,7 +35,10 @@ Options:
 		os.Exit(1)
 	}
 	log.SetOutput(ioutil.Discard)
-	client := client.NewGcmClientNanomsg()
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	factory := client.NewGcmClientFactoryNanomsg()
+	client := factory.WithContext(ctx)
 	port, err := strconv.ParseUint(args["--port"].(string), 10, 16)
 	if err != nil {
 		fmt.Print("Port number must be an unsigned integer")

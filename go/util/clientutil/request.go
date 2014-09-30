@@ -16,3 +16,22 @@ func TryDecodeError(msg *proto.Message, response proto.ProtobufMessage) error {
 	}
 	return nil
 }
+
+func DoRequest(client *ReqClient, request proto.ProtobufMessage, response proto.ProtobufMessage) error {
+	responseMsg, err := client.Request(request)
+	if err != nil {
+		return err
+	}
+
+	err = TryDecodeError(responseMsg, response)
+	if err != nil {
+		return err
+	}
+
+	err = responseMsg.Unmarshal(response)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

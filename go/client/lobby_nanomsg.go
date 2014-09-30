@@ -5,17 +5,18 @@ import (
 
 	"github.com/opentarock/service-api/go/proto_headers"
 	"github.com/opentarock/service-api/go/proto_lobby"
+	"github.com/opentarock/service-api/go/util/clientutil"
 )
 
 // UserClientNanomsg is an implementation of UserClient using nanomsg for message
 // transport and protobuf for message serialization.
 type LobbyClientNanomsg struct {
-	client *ReqClient
+	client *clientutil.ReqClient
 }
 
 func NewLobbyClientNanomsg() *LobbyClientNanomsg {
 	return &LobbyClientNanomsg{
-		client: NewReqClient(),
+		client: clientutil.NewReqClient(),
 	}
 }
 
