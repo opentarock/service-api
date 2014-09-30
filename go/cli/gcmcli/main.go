@@ -37,8 +37,7 @@ Options:
 	log.SetOutput(ioutil.Discard)
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	factory := client.NewGcmClientFactoryNanomsg()
-	client := factory.WithContext(ctx)
+	client := client.NewGcmClientNanomsg()
 	port, err := strconv.ParseUint(args["--port"].(string), 10, 16)
 	if err != nil {
 		fmt.Print("Port number must be an unsigned integer")
@@ -53,7 +52,7 @@ Options:
 		if json, ok := args["--data"].(string); ok {
 			data = json
 		}
-		response, err := client.SendMessage(registrationIds, data, nil)
+		response, err := client.SendMessage(ctx, registrationIds, data, nil)
 		if err != nil {
 			displayError(err)
 		} else if response.ErrorCode != nil {

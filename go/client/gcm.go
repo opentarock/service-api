@@ -1,13 +1,6 @@
 package client
 
-import (
-	"code.google.com/p/go.net/context"
-	"github.com/opentarock/service-api/go/proto_gcm"
-)
-
-type GcmClientFactory interface {
-	WithContext(ctx context.Context) GcmClient
-}
+import "github.com/opentarock/service-api/go/proto_gcm"
 
 type GcmClient interface {
 	SendMessage(

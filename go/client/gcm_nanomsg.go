@@ -7,33 +7,18 @@ import (
 	"github.com/opentarock/service-api/go/util/contextutil"
 )
 
-type GcmClientFactoryNanomsg struct {
+type GcmClientNanomsg struct {
 	client *clientutil.ReqClient
 }
 
-func NewGcmClientFactoryNanomsg() *GcmClientFactoryNanomsg {
-	return &GcmClientFactoryNanomsg{
+func NewGcmClientNanomsg() *GcmClientNanomsg {
+	return &GcmClientNanomsg{
 		client: clientutil.NewReqClient(),
 	}
 }
 
-func (f *GcmClientFactoryNanomsg) WithContext(ctx context.Context) GcmClient {
-	return NewGcmClientNanomsg(ctx, f.client)
-}
-
-type GcmClientNanomsg struct {
-	ctx    context.Context
-	client *clientutil.ReqClient
-}
-
-func NewGcmClientNanomsg(ctx context.Context, client *clientutil.ReqClient) *GcmClientNanomsg {
-	return &GcmClientNanomsg{
-		ctx:    ctx,
-		client: client,
-	}
-}
-
 func (c *GcmClientNanomsg) SendMessage(
+	ctx context.Context,
 	registrationIds []string,
 	data string,
 	params *proto_gcm.Parameters) (*proto_gcm.SendMessageResponse, error) {
@@ -47,7 +32,7 @@ func (c *GcmClientNanomsg) SendMessage(
 	}
 
 	var response proto_gcm.SendMessageResponse
-	err := contextutil.Do(c.ctx, func() error {
+	err := contextutil.Do(ctx, func() error {
 		return clientutil.DoRequest(c.client, &request, &response)
 	})
 	if err != nil {
