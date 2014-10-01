@@ -1,13 +1,12 @@
 package reqcontext
 
 import (
-	"fmt"
-	"log"
 	"os"
 
-	pbuf "code.google.com/p/gogoprotobuf/proto"
-
 	"code.google.com/p/go.net/context"
+	pbuf "code.google.com/p/gogoprotobuf/proto"
+	log "gopkg.in/inconshreveable/log15.v2"
+
 	"github.com/opentarock/service-api/go/proto"
 	"github.com/opentarock/service-api/go/proto_headers"
 )
@@ -30,10 +29,12 @@ func CorrIdFromContext(ctx context.Context) (*proto_headers.RequestCorrelationHe
 	return &h, ok
 }
 
-func ContextLogger(ctx context.Context) *log.Logger {
+func ContextLogger(ctx context.Context) log.Logger {
 	corr, ok := CorrIdFromContext(ctx)
 	if !ok {
-		corr.CorrelationId = pbuf.String("unknown")
+		corr.CorrelationId = pbuf.String("none")
 	}
-	return log.New(os.Stdout, fmt.Sprintf("[%s] ", corr.GetCorrelationId()), log.Ldate|log.Lmicroseconds)
+	logger := log.New(log.Ctx{"corr_id": corr.GetCorrelationId()})
+	logger.SetHandler(log.StreamHandler(os.Stdout, log.LogfmtFormat()))
+	return logger
 }
