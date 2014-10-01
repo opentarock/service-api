@@ -1,14 +1,17 @@
 package client
 
-import "github.com/opentarock/service-api/go/proto_presence"
+import (
+	"github.com/opentarock/service-api/go/proto_presence"
+	"github.com/opentarock/service-api/go/util/clientutil"
+)
 
 type PresenceClientNanomsg struct {
-	client *ReqClient
+	client *clientutil.ReqClient
 }
 
 func NewPresenceClientNanomsg() *PresenceClientNanomsg {
 	return &PresenceClientNanomsg{
-		client: NewReqClient(),
+		client: clientutil.NewReqClient(),
 	}
 }
 

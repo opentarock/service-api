@@ -7,4 +7,6 @@ type GcmClient interface {
 		registrationIds []string,
 		data string,
 		params *proto_gcm.Parameters) (*proto_gcm.SendMessageResponse, error)
+
+	Client
 }

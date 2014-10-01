@@ -3,15 +3,16 @@ package client
 import (
 	"github.com/opentarock/service-api/go/proto"
 	"github.com/opentarock/service-api/go/proto_notify"
+	"github.com/opentarock/service-api/go/util/clientutil"
 )
 
 type NotifyClientNanomsg struct {
-	client *ReqClient
+	client *clientutil.ReqClient
 }
 
 func NewNotifyClientNanomsg() *NotifyClientNanomsg {
 	return &NotifyClientNanomsg{
-		client: NewReqClient(),
+		client: clientutil.NewReqClient(),
 	}
 }
 

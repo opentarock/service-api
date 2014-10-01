@@ -1,21 +1,24 @@
 package client
 
 import (
+	"code.google.com/p/go.net/context"
 	"github.com/opentarock/service-api/go/proto_gcm"
 	"github.com/opentarock/service-api/go/util/clientutil"
+	"github.com/opentarock/service-api/go/util/contextutil"
 )
 
 type GcmClientNanomsg struct {
-	client *ReqClient
+	client *clientutil.ReqClient
 }
 
 func NewGcmClientNanomsg() *GcmClientNanomsg {
 	return &GcmClientNanomsg{
-		client: NewReqClient(),
+		client: clientutil.NewReqClient(),
 	}
 }
 
 func (c *GcmClientNanomsg) SendMessage(
+	ctx context.Context,
 	registrationIds []string,
 	data string,
 	params *proto_gcm.Parameters) (*proto_gcm.SendMessageResponse, error) {
@@ -28,18 +31,10 @@ func (c *GcmClientNanomsg) SendMessage(
 		request.Data = &data
 	}
 
-	responseMsg, err := c.client.Request(&request)
-	if err != nil {
-		return nil, err
-	}
-
 	var response proto_gcm.SendMessageResponse
-	err = clientutil.TryDecodeError(responseMsg, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	err = responseMsg.Unmarshal(&response)
+	err := contextutil.Do(ctx, func() error {
+		return clientutil.DoRequest(c.client, &request, &response)
+	})
 	if err != nil {
 		return nil, err
 	}

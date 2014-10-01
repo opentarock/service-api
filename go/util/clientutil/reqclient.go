@@ -1,7 +1,8 @@
-package client
+package clientutil
 
 import (
 	"log"
+	"sync"
 	"time"
 
 	nmsg "github.com/op/go-nanomsg"
@@ -10,6 +11,7 @@ import (
 
 type ReqClient struct {
 	socket *nmsg.ReqSocket
+	lock   *sync.Mutex
 }
 
 func NewReqClient() *ReqClient {
@@ -25,12 +27,16 @@ func NewReqClient() *ReqClient {
 	}
 	return &ReqClient{
 		socket: socket,
+		lock:   new(sync.Mutex),
 	}
 }
 
 func (s *ReqClient) Request(
 	request proto.ProtobufMessage,
 	headers ...proto.ProtobufMessage) (*proto.Message, error) {
+
+	s.lock.Lock()
+	defer s.lock.Unlock()
 
 	msg, err := proto.MarshalHeaders(request, headers)
 	if err != nil {
