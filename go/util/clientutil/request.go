@@ -8,7 +8,7 @@ import (
 func TryDecodeError(msg *proto.Message, response proto.ProtobufMessage) error {
 	if msg.Type != response.GetMessageType() {
 		var responseError proto_errors.ErrorResponse
-		err := msg.Unmarshal(response)
+		err := msg.Unmarshal(&responseError)
 		if err != nil {
 			return err
 		}
