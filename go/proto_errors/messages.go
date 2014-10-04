@@ -54,7 +54,7 @@ func NewMissingFieldError(name string) *ErrorResponse {
 
 func NewUnsupportedMessage(ty proto.Type) *ErrorResponse {
 	return &ErrorResponse{
-		ErrorCode:   ErrorCode_INTERNAL_ERROR.Enum(),
+		ErrorCode:   ErrorCode_UNSUPPORTED_MESSAGE.Enum(),
 		Description: pbuf.String(fmt.Sprintf("Message of type=%X is not supported by this service.", ty)),
 	}
 }
