@@ -1,9 +1,12 @@
 package client
 
 import (
+	"code.google.com/p/go.net/context"
+
 	"github.com/opentarock/service-api/go/proto"
 	"github.com/opentarock/service-api/go/proto_notify"
 	"github.com/opentarock/service-api/go/util/clientutil"
+	"github.com/opentarock/service-api/go/util/contextutil"
 )
 
 type NotifyClientNanomsg struct {
@@ -17,19 +20,18 @@ func NewNotifyClientNanomsg() *NotifyClientNanomsg {
 }
 
 func (c *NotifyClientNanomsg) MessageUsers(
-	msg proto.ProtobufMessage, users ...uint64) (*proto_notify.MessageUsersResponse, error) {
+	ctx context.Context,
+	msg proto.ProtobufMessage,
+	users ...uint64) (*proto_notify.MessageUsersResponse, error) {
 
 	header := proto_notify.MessageUsersHeader{
 		UserIds: users,
 	}
 
-	responseMsg, err := c.client.Request(msg, &header)
-	if err != nil {
-		return nil, err
-	}
-
 	var response proto_notify.MessageUsersResponse
-	err = responseMsg.Unmarshal(&response)
+	err := contextutil.Do(ctx, func() error {
+		return clientutil.DoRequest(c.client, msg, &response, &header)
+	})
 	if err != nil {
 		return nil, err
 	}

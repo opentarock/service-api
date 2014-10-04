@@ -5,3 +5,11 @@ message MessageUsersHeader {
 }
 
 message MessageUsersResponse {}
+
+message TextMessage {
+  enum Type {
+    JSON = 0;
+  }
+  required Type type = 1;
+  required string data = 2;
+}

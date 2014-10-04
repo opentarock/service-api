@@ -17,8 +17,13 @@ func TryDecodeError(msg *proto.Message, response proto.ProtobufMessage) error {
 	return nil
 }
 
-func DoRequest(client *ReqClient, request proto.ProtobufMessage, response proto.ProtobufMessage) error {
-	responseMsg, err := client.Request(request)
+func DoRequest(
+	client *ReqClient,
+	request proto.ProtobufMessage,
+	response proto.ProtobufMessage,
+	headers ...proto.ProtobufMessage) error {
+
+	responseMsg, err := client.Request(request, headers...)
 	if err != nil {
 		return err
 	}

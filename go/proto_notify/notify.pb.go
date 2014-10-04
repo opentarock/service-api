@@ -11,6 +11,7 @@ It is generated from these files:
 It has these top-level messages:
 	MessageUsersHeader
 	MessageUsersResponse
+	TextMessage
 */
 package proto_notify
 
@@ -22,6 +23,36 @@ import math "math"
 var _ = proto.Marshal
 var _ = &json.SyntaxError{}
 var _ = math.Inf
+
+type TextMessage_Type int32
+
+const (
+	TextMessage_JSON TextMessage_Type = 0
+)
+
+var TextMessage_Type_name = map[int32]string{
+	0: "JSON",
+}
+var TextMessage_Type_value = map[string]int32{
+	"JSON": 0,
+}
+
+func (x TextMessage_Type) Enum() *TextMessage_Type {
+	p := new(TextMessage_Type)
+	*p = x
+	return p
+}
+func (x TextMessage_Type) String() string {
+	return proto.EnumName(TextMessage_Type_name, int32(x))
+}
+func (x *TextMessage_Type) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(TextMessage_Type_value, data, "TextMessage_Type")
+	if err != nil {
+		return err
+	}
+	*x = TextMessage_Type(value)
+	return nil
+}
 
 type MessageUsersHeader struct {
 	UserIds          []uint64 `protobuf:"varint,1,rep,name=user_ids" json:"user_ids,omitempty"`
@@ -47,5 +78,30 @@ func (m *MessageUsersResponse) Reset()         { *m = MessageUsersResponse{} }
 func (m *MessageUsersResponse) String() string { return proto.CompactTextString(m) }
 func (*MessageUsersResponse) ProtoMessage()    {}
 
+type TextMessage struct {
+	Type             *TextMessage_Type `protobuf:"varint,1,req,name=type,enum=proto_notify.TextMessage_Type" json:"type,omitempty"`
+	Data             *string           `protobuf:"bytes,2,req,name=data" json:"data,omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
+}
+
+func (m *TextMessage) Reset()         { *m = TextMessage{} }
+func (m *TextMessage) String() string { return proto.CompactTextString(m) }
+func (*TextMessage) ProtoMessage()    {}
+
+func (m *TextMessage) GetType() TextMessage_Type {
+	if m != nil && m.Type != nil {
+		return *m.Type
+	}
+	return TextMessage_JSON
+}
+
+func (m *TextMessage) GetData() string {
+	if m != nil && m.Data != nil {
+		return *m.Data
+	}
+	return ""
+}
+
 func init() {
+	proto.RegisterEnum("proto_notify.TextMessage_Type", TextMessage_Type_name, TextMessage_Type_value)
 }
