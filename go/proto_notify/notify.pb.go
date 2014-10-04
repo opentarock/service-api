@@ -55,7 +55,7 @@ func (x *TextMessage_Type) UnmarshalJSON(data []byte) error {
 }
 
 type MessageUsersHeader struct {
-	UserIds          []uint64 `protobuf:"varint,1,rep,name=user_ids" json:"user_ids,omitempty"`
+	UserIds          []string `protobuf:"bytes,1,rep,name=user_ids" json:"user_ids,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -63,7 +63,7 @@ func (m *MessageUsersHeader) Reset()         { *m = MessageUsersHeader{} }
 func (m *MessageUsersHeader) String() string { return proto.CompactTextString(m) }
 func (*MessageUsersHeader) ProtoMessage()    {}
 
-func (m *MessageUsersHeader) GetUserIds() []uint64 {
+func (m *MessageUsersHeader) GetUserIds() []string {
 	if m != nil {
 		return m.UserIds
 	}

@@ -22,7 +22,7 @@ func NewNotifyClientNanomsg() *NotifyClientNanomsg {
 func (c *NotifyClientNanomsg) MessageUsers(
 	ctx context.Context,
 	msg proto.ProtobufMessage,
-	users ...uint64) (*proto_notify.MessageUsersResponse, error) {
+	users ...string) (*proto_notify.MessageUsersResponse, error) {
 
 	header := proto_notify.MessageUsersHeader{
 		UserIds: users,

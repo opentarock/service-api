@@ -1,7 +1,7 @@
 package proto_notify;
 
 message MessageUsersHeader {
-  repeated uint64 user_ids = 1;
+  repeated string user_ids = 1;
 }
 
 message MessageUsersResponse {}

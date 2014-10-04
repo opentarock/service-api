@@ -11,5 +11,5 @@ type NotifyClient interface {
 	MessageUsers(
 		ctx context.Context,
 		msg proto.ProtobufMessage,
-		users ...uint64) (*proto_notify.MessageUsersResponse, error)
+		users ...string) (*proto_notify.MessageUsersResponse, error)
 }
