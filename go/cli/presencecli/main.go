@@ -6,11 +6,16 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
+
+	"code.google.com/p/go.net/context"
 
 	"github.com/opentarock/service-api/go/client"
 	"github.com/opentarock/service-api/go/proto_presence"
 	"github.com/opentarock/service-api/go/service"
 )
+
+const timeout = 5 * time.Second
 
 func main() {
 	if len(os.Args) < 2 {
@@ -21,6 +26,10 @@ func main() {
 	err := client.Connect(service.MakeServiceAddress("localhost", service.PresenceServiceDefaultPort))
 	exitError(err)
 	defer client.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
 	switch os.Args[1] {
 	case "update_user_status":
 		userId := getArg(2)
@@ -30,14 +39,14 @@ func main() {
 			log.Fatalf("Invalid status value: '%s'", statusString)
 		}
 		device := parseDevice(getArg(4))
-		response, err := client.UpdateUserStatus(userId, proto_presence.UpdateUserStatusRequest_Status(status), device)
+		response, err := client.UpdateUserStatus(ctx, userId, proto_presence.UpdateUserStatusRequest_Status(status), device)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)
 		fmt.Println(string(result))
 	case "get_user_devices":
 		userId := getArg(2)
-		response, err := client.GetUserDevices(userId)
+		response, err := client.GetUserDevices(ctx, userId)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)

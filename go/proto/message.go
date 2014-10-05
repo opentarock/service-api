@@ -5,11 +5,16 @@ import (
 	"encoding/binary"
 	"io"
 	"log"
+	"strconv"
 
 	pbuf "code.google.com/p/gogoprotobuf/proto"
 )
 
 type Type uint64
+
+func (t Type) String() string {
+	return strconv.FormatUint(uint64(t), 10)
+}
 
 type Header map[Type][]byte
 

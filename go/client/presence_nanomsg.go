@@ -1,8 +1,10 @@
 package client
 
 import (
+	"code.google.com/p/go.net/context"
 	"github.com/opentarock/service-api/go/proto_presence"
 	"github.com/opentarock/service-api/go/util/clientutil"
+	"github.com/opentarock/service-api/go/util/contextutil"
 )
 
 type PresenceClientNanomsg struct {
@@ -16,6 +18,7 @@ func NewPresenceClientNanomsg() *PresenceClientNanomsg {
 }
 
 func (c *PresenceClientNanomsg) UpdateUserStatus(
+	ctx context.Context,
 	userId string,
 	status proto_presence.UpdateUserStatusRequest_Status,
 	device *proto_presence.Device) (*proto_presence.UpdateUserStatusResponse, error) {
@@ -26,34 +29,33 @@ func (c *PresenceClientNanomsg) UpdateUserStatus(
 		Device: device,
 	}
 
-	responseMsg, err := c.client.Request(request)
+	var response proto_presence.UpdateUserStatusResponse
+	err := contextutil.Do(ctx, func() error {
+		return clientutil.DoRequest(c.client, request, &response)
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response proto_presence.UpdateUserStatusResponse
-	err = responseMsg.Unmarshal(&response)
-	if err != nil {
-		return nil, err
-	}
 	return &response, nil
 }
 
-func (c PresenceClientNanomsg) GetUserDevices(userId string) (*proto_presence.GetUserDevicesResponse, error) {
+func (c PresenceClientNanomsg) GetUserDevices(
+	ctx context.Context,
+	userId string) (*proto_presence.GetUserDevicesResponse, error) {
+
 	request := &proto_presence.GetUserDevicesRequest{
 		UserId: &userId,
 	}
 
-	responseMsg, err := c.client.Request(request)
+	var response proto_presence.GetUserDevicesResponse
+	err := contextutil.Do(ctx, func() error {
+		return clientutil.DoRequest(c.client, request, &response)
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response proto_presence.GetUserDevicesResponse
-	err = responseMsg.Unmarshal(&response)
-	if err != nil {
-		return nil, err
-	}
 	return &response, nil
 }
 

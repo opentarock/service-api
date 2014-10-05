@@ -27,12 +27,12 @@ func NewRepService(bind string) *RepService {
 }
 
 func (s *RepService) AddHandler(messageType proto.Type, handler MessageHandler) {
-	log.Printf("Adding handler for message type: %X", messageType)
+	log.Printf("Adding handler for message type: %X", uint64(messageType))
 	s.messageHandlers[messageType] = handler
 }
 
 func (s *RepService) AddHeaderHandler(messageType proto.Type, handler MessageHandler) {
-	log.Printf("Adding handler for header message type: %X", messageType)
+	log.Printf("Adding handler for header message type: %X", uint64(messageType))
 	s.headerHandlers[messageType] = handler
 }
 
