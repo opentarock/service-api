@@ -1,6 +1,7 @@
 package clientutil
 
 import (
+	"code.google.com/p/go.net/context"
 	"github.com/opentarock/service-api/go/proto"
 	"github.com/opentarock/service-api/go/proto_errors"
 )
@@ -18,25 +19,36 @@ func TryDecodeError(msg *proto.Message, response proto.ProtobufMessage) error {
 }
 
 func DoRequest(
+	ctx context.Context,
 	client *ReqClient,
 	request proto.ProtobufMessage,
 	response proto.ProtobufMessage,
 	headers ...proto.ProtobufMessage) error {
 
-	responseMsg, err := client.Request(request, headers...)
+	req, err := client.Request(request, headers...)
+	defer req.Cancel()
 	if err != nil {
 		return err
 	}
 
-	err = TryDecodeError(responseMsg, response)
-	if err != nil {
-		return err
-	}
+	select {
+	case responseMsg := <-req.Done():
+		if responseMsg == nil {
+			return req.Err()
+		} else {
+			err = TryDecodeError(responseMsg, response)
+			if err != nil {
+				return err
+			}
 
-	err = responseMsg.Unmarshal(response)
-	if err != nil {
-		return err
+			err = responseMsg.Unmarshal(response)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+	case <-ctx.Done():
+		req.Cancel()
+		return ctx.Err()
 	}
-
-	return nil
 }

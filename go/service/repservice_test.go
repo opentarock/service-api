@@ -9,8 +9,13 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/opentarock/service-api/go/proto"
+	"github.com/opentarock/service-api/go/proto_errors"
 	"github.com/opentarock/service-api/go/service"
 )
+
+func msg() proto.ProtobufMessage {
+	return proto_errors.NewInternalErrorUnknown()
+}
 
 func TestMessageHandler(t *testing.T) {
 	req, err := nmsg.NewReqSocket()
@@ -22,7 +27,7 @@ func TestMessageHandler(t *testing.T) {
 	repService.AddHandler(1,
 		service.MessageHandlerFunc(func(data *proto.Message) proto.CompositeMessage {
 			called = true
-			return proto.CompositeMessage{}
+			return proto.CompositeMessage{Message: msg()}
 		}))
 	go func() {
 		repService.Start()
@@ -45,13 +50,13 @@ func TestOnlyLastAddedHandlerForTypeIsUsed(t *testing.T) {
 	repService.AddHandler(1,
 		service.MessageHandlerFunc(func(data *proto.Message) proto.CompositeMessage {
 			calledFirst = true
-			return proto.CompositeMessage{}
+			return proto.CompositeMessage{Message: msg()}
 		}))
 	calledSecond := false
 	repService.AddHandler(1,
 		service.MessageHandlerFunc(func(data *proto.Message) proto.CompositeMessage {
 			calledSecond = true
-			return proto.CompositeMessage{}
+			return proto.CompositeMessage{Message: msg()}
 		}))
 	go func() {
 		repService.Start()
@@ -75,13 +80,13 @@ func TestHeaderHandler(t *testing.T) {
 	repService.AddHandler(1,
 		service.MessageHandlerFunc(func(data *proto.Message) proto.CompositeMessage {
 			calledFirst = true
-			return proto.CompositeMessage{}
+			return proto.CompositeMessage{Message: msg()}
 		}))
 	calledSecond := false
 	repService.AddHeaderHandler(2,
 		service.MessageHandlerFunc(func(data *proto.Message) proto.CompositeMessage {
 			calledSecond = true
-			return proto.CompositeMessage{}
+			return proto.CompositeMessage{Message: msg()}
 		}))
 	go func() {
 		repService.Start()
@@ -107,13 +112,13 @@ func TestMessageHandlerHasHigherPriority(t *testing.T) {
 	repService.AddHandler(1,
 		service.MessageHandlerFunc(func(data *proto.Message) proto.CompositeMessage {
 			calledFirst = true
-			return proto.CompositeMessage{}
+			return proto.CompositeMessage{Message: msg()}
 		}))
 	calledSecond := false
 	repService.AddHeaderHandler(2,
 		service.MessageHandlerFunc(func(data *proto.Message) proto.CompositeMessage {
 			calledSecond = true
-			return proto.CompositeMessage{}
+			return proto.CompositeMessage{Message: msg()}
 		}))
 	go func() {
 		repService.Start()

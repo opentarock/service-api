@@ -3,7 +3,6 @@ package clientutil
 import (
 	"log"
 	"sync"
-	"time"
 
 	nmsg "github.com/op/go-nanomsg"
 	"github.com/opentarock/service-api/go/proto"
@@ -19,40 +18,81 @@ func NewReqClient() *ReqClient {
 	if err != nil {
 		log.Panicf("Error creating req socket: %s", err)
 	}
-	const timeout = 1 * time.Second
-	err = socket.SetSendTimeout(timeout)
-	err = socket.SetRecvTimeout(timeout)
-	if err != nil {
-		log.Panicf("Error setting socket timeout: %s", err)
-	}
 	return &ReqClient{
 		socket: socket,
 		lock:   new(sync.Mutex),
 	}
 }
 
+type Request struct {
+	done       chan *proto.Message
+	cancel     func()
+	cancelOnce *sync.Once
+	err        error
+	lock       *sync.RWMutex
+}
+
+func newRequest(f func(done chan<- *proto.Message) error, cancel func()) *Request {
+	done := make(chan *proto.Message)
+	req := &Request{
+		done:       done,
+		cancel:     cancel,
+		cancelOnce: new(sync.Once),
+		lock:       new(sync.RWMutex),
+	}
+	go func() {
+		req.setErr(f(done))
+	}()
+	return req
+}
+
+func (r *Request) setErr(err error) {
+	r.lock.Lock()
+	defer r.lock.Unlock()
+	r.err = err
+}
+
+func (r *Request) Cancel() {
+	r.cancelOnce.Do(r.cancel)
+}
+
+func (r *Request) Err() error {
+	r.lock.RLock()
+	defer r.lock.RUnlock()
+	return r.err
+}
+
+func (r *Request) Done() <-chan *proto.Message {
+	return r.done
+}
+
 func (s *ReqClient) Request(
 	request proto.ProtobufMessage,
-	headers ...proto.ProtobufMessage) (*proto.Message, error) {
-
-	s.lock.Lock()
-	defer s.lock.Unlock()
+	headers ...proto.ProtobufMessage) (*Request, error) {
 
 	msg, err := proto.MarshalHeaders(request, headers)
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.send(msg)
-	if err != nil {
-		return nil, err
-	}
-	responseMsg, err := s.recv()
-	if err != nil {
-		return nil, err
-	}
+	s.lock.Lock()
 
-	return responseMsg, nil
+	req := newRequest(func(done chan<- *proto.Message) error {
+		err = s.send(msg)
+		if err != nil {
+			return err
+		}
+		responseMsg, err := s.recv()
+		if err != nil {
+			return err
+		}
+		done <- responseMsg
+		return nil
+	}, func() {
+		s.lock.Unlock()
+	})
+
+	return req, nil
 }
 
 func (c *ReqClient) Connect(address string) error {

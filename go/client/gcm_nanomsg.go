@@ -33,7 +33,7 @@ func (c *GcmClientNanomsg) SendMessage(
 
 	var response proto_gcm.SendMessageResponse
 	err := contextutil.Do(ctx, func() error {
-		return clientutil.DoRequest(c.client, &request, &response)
+		return clientutil.DoRequest(ctx, c.client, &request, &response)
 	})
 	if err != nil {
 		return nil, err

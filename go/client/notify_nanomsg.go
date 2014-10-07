@@ -30,7 +30,7 @@ func (c *NotifyClientNanomsg) MessageUsers(
 
 	var response proto_notify.MessageUsersResponse
 	err := contextutil.Do(ctx, func() error {
-		return clientutil.DoRequest(c.client, msg, &response, &header)
+		return clientutil.DoRequest(ctx, c.client, msg, &response, &header)
 	})
 	if err != nil {
 		return nil, err

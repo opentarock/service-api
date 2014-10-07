@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 
+	"code.google.com/p/go.net/context"
 	pbuf "code.google.com/p/gogoprotobuf/proto"
 
 	"github.com/opentarock/service-api/go/client"
@@ -21,6 +23,8 @@ func main() {
 	client := client.NewLobbyClientNanomsg()
 	err := client.Connect("tcp://localhost:7001")
 	exitError(err)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	defer client.Close()
 	switch os.Args[1] {
 	case "create_room":
@@ -34,7 +38,7 @@ func main() {
 			UserId:      pbuf.Uint64(userId),
 			AccessToken: pbuf.String("token"),
 		}
-		response, err := client.CreateRoom(&auth, roomName, &roomOptions)
+		response, err := client.CreateRoom(ctx, &auth, roomName, &roomOptions)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)
@@ -47,7 +51,7 @@ func main() {
 			UserId:      pbuf.Uint64(userId),
 			AccessToken: pbuf.String("token"),
 		}
-		response, err := client.JoinRoom(&auth, roomId)
+		response, err := client.JoinRoom(ctx, &auth, roomId)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)
@@ -59,7 +63,7 @@ func main() {
 			UserId:      pbuf.Uint64(userId),
 			AccessToken: pbuf.String("token"),
 		}
-		response, err := client.LeaveRoom(&auth)
+		response, err := client.LeaveRoom(ctx, &auth)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)
@@ -71,14 +75,14 @@ func main() {
 			UserId:      pbuf.Uint64(userId),
 			AccessToken: pbuf.String("token"),
 		}
-		response, err := client.ListRooms(&auth)
+		response, err := client.ListRooms(ctx, &auth)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)
 		fmt.Println(string(result))
 	case "room_info":
 		roomId := getArg(2)
-		response, err := client.RoomInfo(roomId)
+		response, err := client.RoomInfo(ctx, roomId)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)
@@ -90,7 +94,7 @@ func main() {
 			UserId:      pbuf.Uint64(userId),
 			AccessToken: pbuf.String("token"),
 		}
-		response, err := client.StartGame(&auth)
+		response, err := client.StartGame(ctx, &auth)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)
@@ -104,7 +108,7 @@ func main() {
 		}
 		state := getArg(3)
 		exitError(err)
-		response, err := client.PlayerReady(&auth, state)
+		response, err := client.PlayerReady(ctx, &auth, state)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)

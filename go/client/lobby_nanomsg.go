@@ -1,11 +1,12 @@
 package client
 
 import (
-	"log"
+	"code.google.com/p/go.net/context"
 
 	"github.com/opentarock/service-api/go/proto_headers"
 	"github.com/opentarock/service-api/go/proto_lobby"
 	"github.com/opentarock/service-api/go/util/clientutil"
+	"github.com/opentarock/service-api/go/util/contextutil"
 )
 
 // UserClientNanomsg is an implementation of UserClient using nanomsg for message
@@ -20,7 +21,8 @@ func NewLobbyClientNanomsg() *LobbyClientNanomsg {
 	}
 }
 
-func (s *LobbyClientNanomsg) CreateRoom(
+func (c *LobbyClientNanomsg) CreateRoom(
+	ctx context.Context,
 	auth *proto_headers.AuthorizationHeader,
 	name string,
 	options *proto_lobby.RoomOptions) (*proto_lobby.CreateRoomResponse, error) {
@@ -30,20 +32,19 @@ func (s *LobbyClientNanomsg) CreateRoom(
 		Options: options,
 	}
 
-	responseMsg, err := s.client.Request(request, auth)
+	var response proto_lobby.CreateRoomResponse
+	err := contextutil.Do(ctx, func() error {
+		return clientutil.DoRequest(ctx, c.client, request, &response)
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response proto_lobby.CreateRoomResponse
-	err = responseMsg.Unmarshal(&response)
-	if err != nil {
-		return nil, err
-	}
 	return &response, nil
 }
 
-func (s *LobbyClientNanomsg) JoinRoom(
+func (c *LobbyClientNanomsg) JoinRoom(
+	ctx context.Context,
 	auth *proto_headers.AuthorizationHeader,
 	roomId string) (*proto_lobby.JoinRoomResponse, error) {
 
@@ -51,92 +52,89 @@ func (s *LobbyClientNanomsg) JoinRoom(
 		RoomId: &roomId,
 	}
 
-	responseMsg, err := s.client.Request(request, auth)
+	var response proto_lobby.JoinRoomResponse
+	err := contextutil.Do(ctx, func() error {
+		return clientutil.DoRequest(ctx, c.client, request, &response)
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response proto_lobby.JoinRoomResponse
-	err = responseMsg.Unmarshal(&response)
-	if err != nil {
-		return nil, err
-	}
 	return &response, nil
 }
 
-func (s *LobbyClientNanomsg) LeaveRoom(
+func (c *LobbyClientNanomsg) LeaveRoom(
+	ctx context.Context,
 	auth *proto_headers.AuthorizationHeader) (*proto_lobby.LeaveRoomResponse, error) {
 
 	request := &proto_lobby.LeaveRoomRequest{}
 
-	responseMsg, err := s.client.Request(request, auth)
+	var response proto_lobby.LeaveRoomResponse
+	err := contextutil.Do(ctx, func() error {
+		return clientutil.DoRequest(ctx, c.client, request, &response)
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response proto_lobby.LeaveRoomResponse
-	err = responseMsg.Unmarshal(&response)
-	if err != nil {
-		return nil, err
-	}
 	return &response, nil
 }
 
-func (s *LobbyClientNanomsg) ListRooms(
+func (c *LobbyClientNanomsg) ListRooms(
+	ctx context.Context,
 	auth *proto_headers.AuthorizationHeader) (*proto_lobby.ListRoomsResponse, error) {
 
 	request := &proto_lobby.ListRoomsRequest{}
 
-	responseMsg, err := s.client.Request(request, auth)
+	var response proto_lobby.ListRoomsResponse
+	err := contextutil.Do(ctx, func() error {
+		return clientutil.DoRequest(ctx, c.client, request, &response)
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response proto_lobby.ListRoomsResponse
-	err = responseMsg.Unmarshal(&response)
-	if err != nil {
-		log.Println(err)
-	}
 	return &response, nil
 }
 
-func (s *LobbyClientNanomsg) RoomInfo(roomId string) (*proto_lobby.RoomInfoResponse, error) {
+func (c *LobbyClientNanomsg) RoomInfo(
+	ctx context.Context,
+	roomId string) (*proto_lobby.RoomInfoResponse, error) {
+
 	request := &proto_lobby.RoomInfoRequest{
 		RoomId: &roomId,
 	}
 
-	responseMsg, err := s.client.Request(request)
+	var response proto_lobby.RoomInfoResponse
+	err := contextutil.Do(ctx, func() error {
+		return clientutil.DoRequest(ctx, c.client, request, &response)
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response proto_lobby.RoomInfoResponse
-	err = responseMsg.Unmarshal(&response)
-	if err != nil {
-		log.Println(err)
-	}
 	return &response, nil
 }
 
-func (s *LobbyClientNanomsg) StartGame(
+func (c *LobbyClientNanomsg) StartGame(
+	ctx context.Context,
 	auth *proto_headers.AuthorizationHeader) (*proto_lobby.StartGameResponse, error) {
 
 	request := &proto_lobby.StartGameRequest{}
 
-	responseMsg, err := s.client.Request(request, auth)
+	var response proto_lobby.StartGameResponse
+	err := contextutil.Do(ctx, func() error {
+		return clientutil.DoRequest(ctx, c.client, request, &response)
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response proto_lobby.StartGameResponse
-	err = responseMsg.Unmarshal(&response)
-	if err != nil {
-		log.Println(err)
-	}
 	return &response, nil
 }
 
-func (s *LobbyClientNanomsg) PlayerReady(
+func (c *LobbyClientNanomsg) PlayerReady(
+	ctx context.Context,
 	auth *proto_headers.AuthorizationHeader,
 	state string) (*proto_lobby.PlayerReadyResponse, error) {
 
@@ -144,16 +142,14 @@ func (s *LobbyClientNanomsg) PlayerReady(
 		State: &state,
 	}
 
-	responseMsg, err := s.client.Request(request, auth)
+	var response proto_lobby.PlayerReadyResponse
+	err := contextutil.Do(ctx, func() error {
+		return clientutil.DoRequest(ctx, c.client, request, &response)
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response proto_lobby.PlayerReadyResponse
-	err = responseMsg.Unmarshal(&response)
-	if err != nil {
-		log.Println(err)
-	}
 	return &response, nil
 }
 

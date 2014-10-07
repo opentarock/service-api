@@ -31,7 +31,7 @@ func (c *PresenceClientNanomsg) UpdateUserStatus(
 
 	var response proto_presence.UpdateUserStatusResponse
 	err := contextutil.Do(ctx, func() error {
-		return clientutil.DoRequest(c.client, request, &response)
+		return clientutil.DoRequest(ctx, c.client, request, &response)
 	})
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (c PresenceClientNanomsg) GetUserDevices(
 
 	var response proto_presence.GetUserDevicesResponse
 	err := contextutil.Do(ctx, func() error {
-		return clientutil.DoRequest(c.client, request, &response)
+		return clientutil.DoRequest(ctx, c.client, request, &response)
 	})
 	if err != nil {
 		return nil, err
