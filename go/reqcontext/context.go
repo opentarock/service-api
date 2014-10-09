@@ -16,8 +16,6 @@ type key int
 
 const reqCorrKey key = 0
 
-const timeoutKey key = 1
-
 func WithRequest(
 	ctx context.Context,
 	msg *proto.Message,
