@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	"code.google.com/p/go.net/context"
@@ -28,14 +27,14 @@ func main() {
 	defer client.Close()
 	switch os.Args[1] {
 	case "create_room":
-		userId, err := strconv.ParseUint(getArg(2), 10, 64)
+		userId := getArg(2)
 		exitError(err)
 		roomName := getArg(3)
 		roomOptions := proto_lobby.RoomOptions{}
 		err = json.Unmarshal([]byte(getArg(4)), &roomOptions)
 		exitError(err)
 		auth := proto_headers.AuthorizationHeader{
-			UserId:      pbuf.Uint64(userId),
+			UserId:      pbuf.String(userId),
 			AccessToken: pbuf.String("token"),
 		}
 		response, err := client.CreateRoom(ctx, &auth, roomName, &roomOptions)
@@ -44,11 +43,11 @@ func main() {
 		exitError(err)
 		fmt.Println(string(result))
 	case "join_room":
-		userId, err := strconv.ParseUint(getArg(2), 10, 64)
+		userId := getArg(2)
 		exitError(err)
 		roomId := getArg(3)
 		auth := proto_headers.AuthorizationHeader{
-			UserId:      pbuf.Uint64(userId),
+			UserId:      pbuf.String(userId),
 			AccessToken: pbuf.String("token"),
 		}
 		response, err := client.JoinRoom(ctx, &auth, roomId)
@@ -57,10 +56,10 @@ func main() {
 		exitError(err)
 		fmt.Println(string(result))
 	case "leave_room":
-		userId, err := strconv.ParseUint(getArg(2), 10, 64)
+		userId := getArg(2)
 		exitError(err)
 		auth := proto_headers.AuthorizationHeader{
-			UserId:      pbuf.Uint64(userId),
+			UserId:      pbuf.String(userId),
 			AccessToken: pbuf.String("token"),
 		}
 		response, err := client.LeaveRoom(ctx, &auth)
@@ -69,10 +68,10 @@ func main() {
 		exitError(err)
 		fmt.Println(string(result))
 	case "list_rooms":
-		userId, err := strconv.ParseUint(getArg(2), 10, 64)
+		userId := getArg(2)
 		exitError(err)
 		auth := proto_headers.AuthorizationHeader{
-			UserId:      pbuf.Uint64(userId),
+			UserId:      pbuf.String(userId),
 			AccessToken: pbuf.String("token"),
 		}
 		response, err := client.ListRooms(ctx, &auth)
@@ -88,10 +87,10 @@ func main() {
 		exitError(err)
 		fmt.Println(string(result))
 	case "start_game":
-		userId, err := strconv.ParseUint(getArg(2), 10, 64)
+		userId := getArg(2)
 		exitError(err)
 		auth := proto_headers.AuthorizationHeader{
-			UserId:      pbuf.Uint64(userId),
+			UserId:      pbuf.String(userId),
 			AccessToken: pbuf.String("token"),
 		}
 		response, err := client.StartGame(ctx, &auth)
@@ -100,10 +99,10 @@ func main() {
 		exitError(err)
 		fmt.Println(string(result))
 	case "player_ready":
-		userId, err := strconv.ParseUint(getArg(2), 10, 64)
+		userId := getArg(2)
 		exitError(err)
 		auth := proto_headers.AuthorizationHeader{
-			UserId:      pbuf.Uint64(userId),
+			UserId:      pbuf.String(userId),
 			AccessToken: pbuf.String("token"),
 		}
 		state := getArg(3)

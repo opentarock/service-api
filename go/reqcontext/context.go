@@ -14,7 +14,10 @@ import (
 
 type key int
 
-const reqCorrKey key = 0
+const (
+	reqCorrKey key = iota
+	authKey
+)
 
 func WithRequest(
 	ctx context.Context,
@@ -51,4 +54,14 @@ func ContextLogger(ctx context.Context) log.Logger {
 	logger := log.New(log.Ctx{"corr_id": corr.GetCorrelationId()})
 	logger.SetHandler(log.StreamHandler(os.Stdout, log.LogfmtFormat()))
 	return logger
+}
+
+func WithAuth(ctx context.Context, userId string, accessToken string) context.Context {
+	auth := proto_headers.NewAutorizationHeader(userId, accessToken)
+	return context.WithValue(ctx, authKey, auth)
+}
+
+func AuthFromContext(ctx context.Context) (*proto_headers.AuthorizationHeader, bool) {
+	h, ok := ctx.Value(authKey).(proto_headers.AuthorizationHeader)
+	return &h, ok
 }

@@ -1,7 +1,7 @@
 package proto_headers;
 
 message AuthorizationHeader {
-  required uint64 user_id = 1;
+  required string user_id = 1;
   required string access_token = 2;
 }
 

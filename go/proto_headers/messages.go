@@ -20,7 +20,7 @@ func (m *AuthorizationHeader) GetMessageType() proto.Type {
 	return AuthorizationHeaderMessage
 }
 
-func NewAutorizationHeader(userId uint64, accessToken string) *AuthorizationHeader {
+func NewAutorizationHeader(userId string, accessToken string) *AuthorizationHeader {
 	return &AuthorizationHeader{
 		UserId:      &userId,
 		AccessToken: &accessToken,

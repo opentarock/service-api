@@ -25,7 +25,7 @@ var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type AuthorizationHeader struct {
-	UserId           *uint64 `protobuf:"varint,1,req,name=user_id" json:"user_id,omitempty"`
+	UserId           *string `protobuf:"bytes,1,req,name=user_id" json:"user_id,omitempty"`
 	AccessToken      *string `protobuf:"bytes,2,req,name=access_token" json:"access_token,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
@@ -34,11 +34,11 @@ func (m *AuthorizationHeader) Reset()         { *m = AuthorizationHeader{} }
 func (m *AuthorizationHeader) String() string { return proto.CompactTextString(m) }
 func (*AuthorizationHeader) ProtoMessage()    {}
 
-func (m *AuthorizationHeader) GetUserId() uint64 {
+func (m *AuthorizationHeader) GetUserId() string {
 	if m != nil && m.UserId != nil {
 		return *m.UserId
 	}
-	return 0
+	return ""
 }
 
 func (m *AuthorizationHeader) GetAccessToken() string {
