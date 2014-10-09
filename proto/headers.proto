@@ -8,3 +8,8 @@ message AuthorizationHeader {
 message RequestCorrelationHeader {
   required string correlation_id = 1;
 }
+
+message TimeoutHeader {
+  optional uint64 timeout = 1;
+  optional uint64 deadline = 2;
+}

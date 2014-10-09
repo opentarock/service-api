@@ -11,6 +11,7 @@ It is generated from these files:
 It has these top-level messages:
 	AuthorizationHeader
 	RequestCorrelationHeader
+	TimeoutHeader
 */
 package proto_headers
 
@@ -61,6 +62,30 @@ func (m *RequestCorrelationHeader) GetCorrelationId() string {
 		return *m.CorrelationId
 	}
 	return ""
+}
+
+type TimeoutHeader struct {
+	Timeout          *uint64 `protobuf:"varint,1,opt,name=timeout" json:"timeout,omitempty"`
+	Deadline         *uint64 `protobuf:"varint,2,opt,name=deadline" json:"deadline,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *TimeoutHeader) Reset()         { *m = TimeoutHeader{} }
+func (m *TimeoutHeader) String() string { return proto.CompactTextString(m) }
+func (*TimeoutHeader) ProtoMessage()    {}
+
+func (m *TimeoutHeader) GetTimeout() uint64 {
+	if m != nil && m.Timeout != nil {
+		return *m.Timeout
+	}
+	return 0
+}
+
+func (m *TimeoutHeader) GetDeadline() uint64 {
+	if m != nil && m.Deadline != nil {
+		return *m.Deadline
+	}
+	return 0
 }
 
 func init() {

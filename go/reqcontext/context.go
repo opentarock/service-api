@@ -2,6 +2,7 @@ package reqcontext
 
 import (
 	"os"
+	"time"
 
 	"code.google.com/p/go.net/context"
 	pbuf "code.google.com/p/gogoprotobuf/proto"
@@ -15,13 +16,28 @@ type key int
 
 const reqCorrKey key = 0
 
-func NewContext(ctx context.Context, msg *proto.Message, excludeHeaders ...proto.Type) context.Context {
+const timeoutKey key = 1
+
+func WithRequest(
+	ctx context.Context,
+	msg *proto.Message,
+	defaultTimeout time.Duration) (context.Context, context.CancelFunc) {
+
 	var corrHeader proto_headers.RequestCorrelationHeader
 	found, err := msg.Header.Unmarshal(&corrHeader)
-	if !found || err != nil {
-		return ctx
+	if found && err == nil {
+		ctx = context.WithValue(ctx, reqCorrKey, corrHeader)
 	}
-	return context.WithValue(ctx, reqCorrKey, corrHeader)
+
+	var timeoutHeader proto_headers.TimeoutHeader
+	found, err = msg.Header.Unmarshal(&timeoutHeader)
+	var timeout time.Duration
+	if found && err == nil {
+		timeout = timeoutHeader.Duration()
+	} else {
+		timeout = defaultTimeout
+	}
+	return context.WithTimeout(ctx, timeout)
 }
 
 func CorrIdFromContext(ctx context.Context) (*proto_headers.RequestCorrelationHeader, bool) {
