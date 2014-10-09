@@ -49,6 +49,14 @@ func (h *TimeoutHeader) Duration() time.Duration {
 	}
 }
 
+func (h *TimeoutHeader) DeadlineTime() time.Time {
+	if h.Timeout != nil {
+		return time.Now().Add(time.Duration(h.GetTimeout()))
+	} else {
+		return unixNanosec(h.GetDeadline())
+	}
+}
+
 func unixNanosec(un uint64) time.Time {
 	p := int64(math.Pow10(9))
 	msec := int64(un) / p

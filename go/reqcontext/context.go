@@ -32,13 +32,13 @@ func WithRequest(
 
 	var timeoutHeader proto_headers.TimeoutHeader
 	found, err = msg.Header.Unmarshal(&timeoutHeader)
-	var timeout time.Duration
+	var deadline time.Time
 	if found && err == nil {
-		timeout = timeoutHeader.Duration()
+		deadline = timeoutHeader.DeadlineTime()
 	} else {
-		timeout = defaultTimeout
+		deadline = time.Now().Add(defaultTimeout)
 	}
-	return context.WithTimeout(ctx, timeout)
+	return context.WithDeadline(ctx, deadline)
 }
 
 func CorrIdFromContext(ctx context.Context) (*proto_headers.RequestCorrelationHeader, bool) {

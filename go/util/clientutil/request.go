@@ -1,8 +1,6 @@
 package clientutil
 
 import (
-	"time"
-
 	"code.google.com/p/go.net/context"
 	"github.com/opentarock/service-api/go/proto"
 	"github.com/opentarock/service-api/go/proto_errors"
@@ -30,7 +28,7 @@ func DoRequest(
 
 	deadline, ok := ctx.Deadline()
 	if ok {
-		headers = append(headers, proto_headers.NewTimeoutHeader(fromDeadline(deadline)))
+		headers = append(headers, proto_headers.NewDeadlineTimeoutHeader(deadline))
 	}
 
 	req, err := client.Request(request, headers...)
@@ -59,12 +57,4 @@ func DoRequest(
 		req.Cancel()
 		return ctx.Err()
 	}
-}
-
-func fromDeadline(t time.Time) time.Duration {
-	d := t.Sub(time.Now())
-	if d < 0 {
-		return 0
-	}
-	return d
 }
