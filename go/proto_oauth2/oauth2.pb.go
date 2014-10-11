@@ -348,7 +348,8 @@ func (m *ErrorResponse) GetErrorUri() string {
 
 type ValidateTokenRequest struct {
 	AccessToken      *string  `protobuf:"bytes,1,req,name=access_token" json:"access_token,omitempty"`
-	Scope            []string `protobuf:"bytes,2,rep,name=scope" json:"scope,omitempty"`
+	TokenType        *string  `protobuf:"bytes,2,req,name=token_type" json:"token_type,omitempty"`
+	Scope            []string `protobuf:"bytes,3,rep,name=scope" json:"scope,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -359,6 +360,13 @@ func (*ValidateTokenRequest) ProtoMessage()    {}
 func (m *ValidateTokenRequest) GetAccessToken() string {
 	if m != nil && m.AccessToken != nil {
 		return *m.AccessToken
+	}
+	return ""
+}
+
+func (m *ValidateTokenRequest) GetTokenType() string {
+	if m != nil && m.TokenType != nil {
+		return *m.TokenType
 	}
 	return ""
 }

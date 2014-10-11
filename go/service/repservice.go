@@ -86,7 +86,7 @@ func (s *RepService) Start() error {
 					}
 				}
 				if !handled {
-					log.Printf("Unknown message type: %X", msg.Type)
+					log.Printf("Unknown message type: %s", msg.Type)
 					sendResponse(socket, proto_errors.NewUnsupportedMessage(msg.Type))
 				}
 			}

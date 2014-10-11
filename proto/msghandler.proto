@@ -1,0 +1,9 @@
+package proto_msghandler;
+
+message RouteMessageRequest {
+  required string data = 1;
+}
+
+message RouteMessageResponse {
+  required string data = 1;
+}

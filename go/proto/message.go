@@ -3,9 +3,9 @@ package proto
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"io"
 	"log"
-	"strconv"
 
 	pbuf "code.google.com/p/gogoprotobuf/proto"
 )
@@ -13,7 +13,7 @@ import (
 type Type uint64
 
 func (t Type) String() string {
-	return strconv.FormatUint(uint64(t), 10)
+	return fmt.Sprintf("%X", uint64(t))
 }
 
 type Header map[Type][]byte

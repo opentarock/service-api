@@ -64,7 +64,8 @@ message ErrorResponse {
 
 message ValidateTokenRequest {
   required string access_token = 1;
-  repeated string scope = 2;
+  required string token_type = 2;
+  repeated string scope = 3;
 }
 
 message ValidateTokenResponse {

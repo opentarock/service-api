@@ -1,13 +1,13 @@
 package reqcontext
 
 import (
-	"os"
 	"time"
 
 	"code.google.com/p/go.net/context"
 	pbuf "code.google.com/p/gogoprotobuf/proto"
-	log "gopkg.in/inconshreveable/log15.v2"
+	"gopkg.in/inconshreveable/log15.v2"
 
+	"github.com/opentarock/service-api/go/log"
 	"github.com/opentarock/service-api/go/proto"
 	"github.com/opentarock/service-api/go/proto_headers"
 )
@@ -41,19 +41,23 @@ func WithRequest(
 	return context.WithDeadline(ctx, deadline)
 }
 
+func WithCorrId(ctx context.Context, corrId proto_headers.RequestCorrelationHeader) context.Context {
+	return context.WithValue(ctx, reqCorrKey, corrId)
+}
+
 func CorrIdFromContext(ctx context.Context) (*proto_headers.RequestCorrelationHeader, bool) {
 	h, ok := ctx.Value(reqCorrKey).(proto_headers.RequestCorrelationHeader)
 	return &h, ok
 }
 
-func ContextLogger(ctx context.Context) log.Logger {
+func ContextLogger(ctx context.Context, args ...interface{}) log15.Logger {
 	corr, ok := CorrIdFromContext(ctx)
 	if !ok {
 		corr.CorrelationId = pbuf.String("none")
 	}
-	logger := log.New(log.Ctx{"corr_id": corr.GetCorrelationId()})
-	logger.SetHandler(log.StreamHandler(os.Stdout, log.LogfmtFormat()))
-	return logger
+	args = append(args, "corr_id")
+	args = append(args, corr.GetCorrelationId())
+	return log.New(args...)
 }
 
 func WithAuth(ctx context.Context, userId string, accessToken string) context.Context {

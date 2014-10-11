@@ -14,10 +14,10 @@ func ErrorMarshalling(r ProtobufMessage, err error) error {
 }
 
 func ErrorTypeMismatch(r ProtobufMessage, actual Type) error {
-	return fmt.Errorf("Expecting %s (type=%X) but got message with type=%X",
+	return fmt.Errorf("Expecting %s (type=%s) but got message with type=%s",
 		reflect.TypeOf(r), r.GetMessageType(), actual)
 }
 
 func ErrorMissingHeader(r ProtobufMessage) error {
-	return fmt.Errorf("Missing header %s (type=%X)", reflect.TypeOf(r), r.GetMessageType())
+	return fmt.Errorf("Missing header %s (type=%s)", reflect.TypeOf(r), r.GetMessageType())
 }
