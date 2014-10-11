@@ -7,11 +7,10 @@ import (
 	"time"
 
 	"code.google.com/p/go.net/context"
-	pbuf "code.google.com/p/gogoprotobuf/proto"
 
 	"github.com/opentarock/service-api/go/client"
-	"github.com/opentarock/service-api/go/proto_headers"
 	"github.com/opentarock/service-api/go/proto_lobby"
+	"github.com/opentarock/service-api/go/reqcontext"
 )
 
 func main() {
@@ -33,11 +32,8 @@ func main() {
 		roomOptions := proto_lobby.RoomOptions{}
 		err = json.Unmarshal([]byte(getArg(4)), &roomOptions)
 		exitError(err)
-		auth := proto_headers.AuthorizationHeader{
-			UserId:      pbuf.String(userId),
-			AccessToken: pbuf.String("token"),
-		}
-		response, err := client.CreateRoom(ctx, &auth, roomName, &roomOptions)
+		ctx = reqcontext.WithAuth(ctx, userId, "token")
+		response, err := client.CreateRoom(ctx, roomName, &roomOptions)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)
@@ -46,11 +42,8 @@ func main() {
 		userId := getArg(2)
 		exitError(err)
 		roomId := getArg(3)
-		auth := proto_headers.AuthorizationHeader{
-			UserId:      pbuf.String(userId),
-			AccessToken: pbuf.String("token"),
-		}
-		response, err := client.JoinRoom(ctx, &auth, roomId)
+		ctx = reqcontext.WithAuth(ctx, userId, "token")
+		response, err := client.JoinRoom(ctx, roomId)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)
@@ -58,11 +51,8 @@ func main() {
 	case "leave_room":
 		userId := getArg(2)
 		exitError(err)
-		auth := proto_headers.AuthorizationHeader{
-			UserId:      pbuf.String(userId),
-			AccessToken: pbuf.String("token"),
-		}
-		response, err := client.LeaveRoom(ctx, &auth)
+		ctx = reqcontext.WithAuth(ctx, userId, "token")
+		response, err := client.LeaveRoom(ctx)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)
@@ -70,11 +60,8 @@ func main() {
 	case "list_rooms":
 		userId := getArg(2)
 		exitError(err)
-		auth := proto_headers.AuthorizationHeader{
-			UserId:      pbuf.String(userId),
-			AccessToken: pbuf.String("token"),
-		}
-		response, err := client.ListRooms(ctx, &auth)
+		ctx = reqcontext.WithAuth(ctx, userId, "token")
+		response, err := client.ListRooms(ctx)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)
@@ -89,11 +76,8 @@ func main() {
 	case "start_game":
 		userId := getArg(2)
 		exitError(err)
-		auth := proto_headers.AuthorizationHeader{
-			UserId:      pbuf.String(userId),
-			AccessToken: pbuf.String("token"),
-		}
-		response, err := client.StartGame(ctx, &auth)
+		ctx = reqcontext.WithAuth(ctx, userId, "token")
+		response, err := client.StartGame(ctx)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)
@@ -101,13 +85,10 @@ func main() {
 	case "player_ready":
 		userId := getArg(2)
 		exitError(err)
-		auth := proto_headers.AuthorizationHeader{
-			UserId:      pbuf.String(userId),
-			AccessToken: pbuf.String("token"),
-		}
+		ctx = reqcontext.WithAuth(ctx, userId, "token")
 		state := getArg(3)
 		exitError(err)
-		response, err := client.PlayerReady(ctx, &auth, state)
+		response, err := client.PlayerReady(ctx, state)
 		exitError(err)
 		result, err := json.Marshal(response)
 		exitError(err)

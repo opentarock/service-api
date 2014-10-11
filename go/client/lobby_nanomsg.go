@@ -3,7 +3,6 @@ package client
 import (
 	"code.google.com/p/go.net/context"
 
-	"github.com/opentarock/service-api/go/proto_headers"
 	"github.com/opentarock/service-api/go/proto_lobby"
 	"github.com/opentarock/service-api/go/util/clientutil"
 	"github.com/opentarock/service-api/go/util/contextutil"
@@ -23,7 +22,6 @@ func NewLobbyClientNanomsg() *LobbyClientNanomsg {
 
 func (c *LobbyClientNanomsg) CreateRoom(
 	ctx context.Context,
-	auth *proto_headers.AuthorizationHeader,
 	name string,
 	options *proto_lobby.RoomOptions) (*proto_lobby.CreateRoomResponse, error) {
 
@@ -45,7 +43,6 @@ func (c *LobbyClientNanomsg) CreateRoom(
 
 func (c *LobbyClientNanomsg) JoinRoom(
 	ctx context.Context,
-	auth *proto_headers.AuthorizationHeader,
 	roomId string) (*proto_lobby.JoinRoomResponse, error) {
 
 	request := &proto_lobby.JoinRoomRequest{
@@ -64,8 +61,7 @@ func (c *LobbyClientNanomsg) JoinRoom(
 }
 
 func (c *LobbyClientNanomsg) LeaveRoom(
-	ctx context.Context,
-	auth *proto_headers.AuthorizationHeader) (*proto_lobby.LeaveRoomResponse, error) {
+	ctx context.Context) (*proto_lobby.LeaveRoomResponse, error) {
 
 	request := &proto_lobby.LeaveRoomRequest{}
 
@@ -81,8 +77,7 @@ func (c *LobbyClientNanomsg) LeaveRoom(
 }
 
 func (c *LobbyClientNanomsg) ListRooms(
-	ctx context.Context,
-	auth *proto_headers.AuthorizationHeader) (*proto_lobby.ListRoomsResponse, error) {
+	ctx context.Context) (*proto_lobby.ListRoomsResponse, error) {
 
 	request := &proto_lobby.ListRoomsRequest{}
 
@@ -117,8 +112,7 @@ func (c *LobbyClientNanomsg) RoomInfo(
 }
 
 func (c *LobbyClientNanomsg) StartGame(
-	ctx context.Context,
-	auth *proto_headers.AuthorizationHeader) (*proto_lobby.StartGameResponse, error) {
+	ctx context.Context) (*proto_lobby.StartGameResponse, error) {
 
 	request := &proto_lobby.StartGameRequest{}
 
@@ -135,7 +129,6 @@ func (c *LobbyClientNanomsg) StartGame(
 
 func (c *LobbyClientNanomsg) PlayerReady(
 	ctx context.Context,
-	auth *proto_headers.AuthorizationHeader,
 	state string) (*proto_lobby.PlayerReadyResponse, error) {
 
 	request := &proto_lobby.PlayerReadyRequest{
