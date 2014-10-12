@@ -5,6 +5,7 @@ import (
 	"github.com/opentarock/service-api/go/proto"
 	"github.com/opentarock/service-api/go/proto_errors"
 	"github.com/opentarock/service-api/go/proto_headers"
+	"github.com/opentarock/service-api/go/reqcontext"
 )
 
 func TryDecodeError(msg *proto.Message, response proto.ProtobufMessage) error {
@@ -26,10 +27,7 @@ func DoRequest(
 	response proto.ProtobufMessage,
 	headers ...proto.ProtobufMessage) error {
 
-	deadline, ok := ctx.Deadline()
-	if ok {
-		headers = append(headers, proto_headers.NewDeadlineTimeoutHeader(deadline))
-	}
+	headers = headersFromContext(ctx, headers)
 
 	req, err := client.Request(request, headers...)
 	defer req.Cancel()
@@ -57,4 +55,23 @@ func DoRequest(
 		req.Cancel()
 		return ctx.Err()
 	}
+}
+
+func headersFromContext(ctx context.Context, headers []proto.ProtobufMessage) []proto.ProtobufMessage {
+	deadline, ok := ctx.Deadline()
+	if ok {
+		headers = append(headers, proto_headers.NewDeadlineTimeoutHeader(deadline))
+	}
+
+	reqCorr, ok := reqcontext.CorrIdFromContext(ctx)
+	if ok {
+		headers = append(headers, reqCorr)
+	}
+
+	auth, ok := reqcontext.AuthFromContext(ctx)
+	if ok {
+		headers = append(headers, auth)
+	}
+
+	return headers
 }
