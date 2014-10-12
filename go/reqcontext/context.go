@@ -30,6 +30,12 @@ func WithRequest(
 		ctx = context.WithValue(ctx, reqCorrKey, corrHeader)
 	}
 
+	var authHeader proto_headers.AuthorizationHeader
+	found, err = msg.Header.Unmarshal(&authHeader)
+	if found && err == nil {
+		ctx = context.WithValue(ctx, authKey, authHeader)
+	}
+
 	var timeoutHeader proto_headers.TimeoutHeader
 	found, err = msg.Header.Unmarshal(&timeoutHeader)
 	var deadline time.Time
@@ -62,7 +68,7 @@ func ContextLogger(ctx context.Context, args ...interface{}) log15.Logger {
 
 func WithAuth(ctx context.Context, userId string, accessToken string) context.Context {
 	auth := proto_headers.NewAutorizationHeader(userId, accessToken)
-	return context.WithValue(ctx, authKey, auth)
+	return context.WithValue(ctx, authKey, *auth)
 }
 
 func AuthFromContext(ctx context.Context) (*proto_headers.AuthorizationHeader, bool) {
