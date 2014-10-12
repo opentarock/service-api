@@ -41,7 +41,7 @@ func NewInternalErrorUnknown() *ErrorResponse {
 func NewMissingHeader(ty proto.Type) *ErrorResponse {
 	return &ErrorResponse{
 		ErrorCode:   ErrorCode_MISSING_HEADER.Enum(),
-		Description: pbuf.String(fmt.Sprintf("Missing header with type=%X", ty)),
+		Description: pbuf.String(fmt.Sprintf("Missing header with type=%s", ty)),
 	}
 }
 
