@@ -244,7 +244,7 @@ func (x *PlayerReadyResponse_ErrorCode) UnmarshalJSON(data []byte) error {
 }
 
 type Player struct {
-	UserId           *uint64 `protobuf:"varint,1,req,name=user_id" json:"user_id,omitempty"`
+	UserId           *string `protobuf:"bytes,1,req,name=user_id" json:"user_id,omitempty"`
 	Nickname         *string `protobuf:"bytes,2,req,name=nickname" json:"nickname,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
@@ -253,11 +253,11 @@ func (m *Player) Reset()         { *m = Player{} }
 func (m *Player) String() string { return proto.CompactTextString(m) }
 func (*Player) ProtoMessage()    {}
 
-func (m *Player) GetUserId() uint64 {
+func (m *Player) GetUserId() string {
 	if m != nil && m.UserId != nil {
 		return *m.UserId
 	}
-	return 0
+	return ""
 }
 
 func (m *Player) GetNickname() string {
@@ -654,7 +654,7 @@ func (m *PlayerReadyResponse) GetErrorCode() PlayerReadyResponse_ErrorCode {
 }
 
 type PlayerReadyEvent struct {
-	UserId           *uint64 `protobuf:"varint,1,req,name=user_id" json:"user_id,omitempty"`
+	UserId           *string `protobuf:"bytes,1,req,name=user_id" json:"user_id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -662,11 +662,11 @@ func (m *PlayerReadyEvent) Reset()         { *m = PlayerReadyEvent{} }
 func (m *PlayerReadyEvent) String() string { return proto.CompactTextString(m) }
 func (*PlayerReadyEvent) ProtoMessage()    {}
 
-func (m *PlayerReadyEvent) GetUserId() uint64 {
+func (m *PlayerReadyEvent) GetUserId() string {
 	if m != nil && m.UserId != nil {
 		return *m.UserId
 	}
-	return 0
+	return ""
 }
 
 func init() {

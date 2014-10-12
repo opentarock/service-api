@@ -19,7 +19,7 @@ type LobbyClient interface {
 
 	ListRooms(ctx context.Context) (*proto_lobby.ListRoomsResponse, error)
 
-	RoomInfo(roomId string) (*proto_lobby.RoomInfoResponse, error)
+	RoomInfo(ctx context.Context, roomId string) (*proto_lobby.RoomInfoResponse, error)
 
 	StartGame(ctx context.Context) (*proto_lobby.StartGameResponse, error)
 
