@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	AuthorizationHeaderMessage      = 0x060101
-	RequestCorrelationHeaderMessage = 0x060201
-	TimeoutHeaderType               = 0x060301
+	AuthorizationHeaderMessage      = proto.Type(0x060101)
+	RequestCorrelationHeaderMessage = proto.Type(0x060201)
+	TimeoutHeaderType               = proto.Type(0x060301)
 )
 
 func (m *AuthorizationHeader) GetMessageType() proto.Type {

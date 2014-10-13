@@ -1,16 +1,11 @@
 package proto_lobby;
 
-message Player {
-  required string user_id = 1;
-  required string nickname = 2;
-}
-
 message Room {
   required string id = 1;
   required string name = 2;
   optional RoomOptions options = 3;
-  required Player owner = 4;
-  repeated Player players = 5;
+  required string owner = 4;
+  repeated string players = 5;
 }
 
 message RoomOptions {
@@ -49,7 +44,7 @@ message JoinRoomResponse {
 }
 
 message JoinRoomEvent {
-  required Player player = 1;
+  required string player = 1;
 }
 
 // Requires proto_headers.AuthorizationHeader to be sent as header.

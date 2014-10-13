@@ -9,7 +9,6 @@ It is generated from these files:
 	lobby.proto
 
 It has these top-level messages:
-	Player
 	Room
 	RoomOptions
 	CreateRoomRequest
@@ -243,36 +242,12 @@ func (x *PlayerReadyResponse_ErrorCode) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type Player struct {
-	UserId           *string `protobuf:"bytes,1,req,name=user_id" json:"user_id,omitempty"`
-	Nickname         *string `protobuf:"bytes,2,req,name=nickname" json:"nickname,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
-}
-
-func (m *Player) Reset()         { *m = Player{} }
-func (m *Player) String() string { return proto.CompactTextString(m) }
-func (*Player) ProtoMessage()    {}
-
-func (m *Player) GetUserId() string {
-	if m != nil && m.UserId != nil {
-		return *m.UserId
-	}
-	return ""
-}
-
-func (m *Player) GetNickname() string {
-	if m != nil && m.Nickname != nil {
-		return *m.Nickname
-	}
-	return ""
-}
-
 type Room struct {
 	Id               *string      `protobuf:"bytes,1,req,name=id" json:"id,omitempty"`
 	Name             *string      `protobuf:"bytes,2,req,name=name" json:"name,omitempty"`
 	Options          *RoomOptions `protobuf:"bytes,3,opt,name=options" json:"options,omitempty"`
-	Owner            *Player      `protobuf:"bytes,4,req,name=owner" json:"owner,omitempty"`
-	Players          []*Player    `protobuf:"bytes,5,rep,name=players" json:"players,omitempty"`
+	Owner            *string      `protobuf:"bytes,4,req,name=owner" json:"owner,omitempty"`
+	Players          []string     `protobuf:"bytes,5,rep,name=players" json:"players,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 
@@ -301,14 +276,14 @@ func (m *Room) GetOptions() *RoomOptions {
 	return nil
 }
 
-func (m *Room) GetOwner() *Player {
-	if m != nil {
-		return m.Owner
+func (m *Room) GetOwner() string {
+	if m != nil && m.Owner != nil {
+		return *m.Owner
 	}
-	return nil
+	return ""
 }
 
-func (m *Room) GetPlayers() []*Player {
+func (m *Room) GetPlayers() []string {
 	if m != nil {
 		return m.Players
 	}
@@ -450,7 +425,7 @@ func (m *JoinRoomResponse) GetErrorCode() JoinRoomResponse_ErrorCode {
 }
 
 type JoinRoomEvent struct {
-	Player           *Player `protobuf:"bytes,1,req,name=player" json:"player,omitempty"`
+	Player           *string `protobuf:"bytes,1,req,name=player" json:"player,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -458,11 +433,11 @@ func (m *JoinRoomEvent) Reset()         { *m = JoinRoomEvent{} }
 func (m *JoinRoomEvent) String() string { return proto.CompactTextString(m) }
 func (*JoinRoomEvent) ProtoMessage()    {}
 
-func (m *JoinRoomEvent) GetPlayer() *Player {
-	if m != nil {
-		return m.Player
+func (m *JoinRoomEvent) GetPlayer() string {
+	if m != nil && m.Player != nil {
+		return *m.Player
 	}
-	return nil
+	return ""
 }
 
 // Requires proto_headers.AuthorizationHeader to be sent as header.
