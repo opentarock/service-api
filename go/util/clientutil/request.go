@@ -30,10 +30,10 @@ func DoRequest(
 	headers = headersFromContext(ctx, headers)
 
 	req, err := client.Request(request, headers...)
-	defer req.Cancel()
 	if err != nil {
 		return err
 	}
+	defer req.Cancel()
 
 	select {
 	case responseMsg := <-req.Done():
