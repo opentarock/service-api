@@ -337,7 +337,7 @@ func (m *RoomOptions) GetFillBots() bool {
 // Requires proto_headers.AuthorizationHeader to be sent as header.
 type CreateRoomRequest struct {
 	Name             *string      `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
-	Options          *RoomOptions `protobuf:"bytes,2,req,name=options" json:"options,omitempty"`
+	Options          *RoomOptions `protobuf:"bytes,2,opt,name=options" json:"options,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 

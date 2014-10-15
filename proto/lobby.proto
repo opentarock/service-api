@@ -18,7 +18,7 @@ message RoomOptions {
 // Requires proto_headers.AuthorizationHeader to be sent as header.
 message CreateRoomRequest {
   required string name = 1;
-  required RoomOptions options = 2;
+  optional RoomOptions options = 2;
 }
 
 message CreateRoomResponse {
